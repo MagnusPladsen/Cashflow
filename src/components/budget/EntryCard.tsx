@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Edit2, Trash2 } from "lucide-react";
-import EntryEditor from "./EntryEditor";
+import EntryEditor, { type EntryEditorConfig } from "./EntryEditor";
 import DeleteConfirm from "./DeleteConfirm";
 
 interface EntryCardProps {
@@ -16,12 +16,21 @@ interface EntryCardProps {
   badge?: string;
   diff?: { value: string; tone: "over" | "under" };
   progress?: { value: number; tone: "over" | "under" };
+  editorConfig?: EntryEditorConfig;
   initialValues?: {
     name?: string;
     amount?: number;
     details?: string;
+    type?: string;
+    account?: string;
   };
-  onSave?: (values: { name: string; amount: number; details: string }) => void;
+  onSave?: (values: {
+    name: string;
+    amount: number;
+    details: string;
+    type?: string;
+    account?: string;
+  }) => void;
   onDelete?: () => void;
 }
 
@@ -32,6 +41,7 @@ export default function EntryCard({
   badge,
   diff,
   progress,
+  editorConfig,
   initialValues,
   onSave,
   onDelete
@@ -121,6 +131,7 @@ export default function EntryCard({
           title={t("common.editEntry", { name: title })}
           initialValues={initialValues}
           onSave={onSave}
+          config={editorConfig}
         />
       ) : null}
     </>

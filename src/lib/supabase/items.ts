@@ -53,6 +53,8 @@ export async function createTemplateExpense(templateId: string, payload: {
   name: string;
   amount: number;
   category: string;
+  type?: "expense" | "spending_transfer";
+  spending_account?: string;
   frequency?: string;
 }) {
   const supabase = createClient();
@@ -63,6 +65,8 @@ export async function createTemplateExpense(templateId: string, payload: {
       name: payload.name,
       amount: payload.amount,
       category: payload.category,
+      type: payload.type ?? "expense",
+      spending_account: payload.spending_account ?? null,
       frequency: payload.frequency ?? "monthly"
     })
     .select("id")
@@ -75,6 +79,8 @@ export async function updateTemplateExpense(id: string, payload: {
   name: string;
   amount: number;
   category: string;
+  type?: "expense" | "spending_transfer";
+  spending_account?: string;
   frequency?: string;
 }) {
   const supabase = createClient();
@@ -84,6 +90,8 @@ export async function updateTemplateExpense(id: string, payload: {
       name: payload.name,
       amount: payload.amount,
       category: payload.category,
+      type: payload.type ?? "expense",
+      spending_account: payload.spending_account ?? null,
       frequency: payload.frequency ?? "monthly"
     })
     .eq("id", id);
@@ -202,6 +210,8 @@ export async function createMonthlyExpense(budgetId: string, payload: {
   name: string;
   amount: number;
   category: string;
+  type?: "expense" | "spending_transfer";
+  spending_account?: string;
   frequency?: string;
   template_expense_id?: string | null;
 }) {
@@ -213,6 +223,8 @@ export async function createMonthlyExpense(budgetId: string, payload: {
       name: payload.name,
       amount: payload.amount,
       category: payload.category,
+      type: payload.type ?? "expense",
+      spending_account: payload.spending_account ?? null,
       frequency: payload.frequency ?? "monthly",
       template_expense_id: payload.template_expense_id ?? null
     })
@@ -226,6 +238,8 @@ export async function updateMonthlyExpense(id: string, payload: {
   name: string;
   amount: number;
   category: string;
+  type?: "expense" | "spending_transfer";
+  spending_account?: string;
   frequency?: string;
 }) {
   const supabase = createClient();
@@ -235,6 +249,8 @@ export async function updateMonthlyExpense(id: string, payload: {
       name: payload.name,
       amount: payload.amount,
       category: payload.category,
+      type: payload.type ?? "expense",
+      spending_account: payload.spending_account ?? null,
       frequency: payload.frequency ?? "monthly"
     })
     .eq("id", id);
