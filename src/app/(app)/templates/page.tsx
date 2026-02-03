@@ -10,9 +10,10 @@ import { useTemplatesQuery } from "@/lib/supabase/queries";
 import HouseholdSetup from "@/components/layout/HouseholdSetup";
 import { toast } from "sonner";
 import { createTemplateAction } from "@/app/actions/templates-create";
+import { getLocaleFromLang } from "@/lib/format";
 
 export default function TemplatesPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data, isLoading } = useTemplatesQuery();
   const templates = data?.templates ?? [];
   const isOwner = data?.household?.role === "owner";
@@ -85,7 +86,11 @@ export default function TemplatesPage() {
                   <div>
                     <h2 className="text-lg font-semibold">{template.name}</h2>
                     <p className="text-sm text-muted-foreground">
-                      {t("templates.updated", { time: template.updated })}
+                      {t("templates.updated", {
+                        time: new Date(template.created_at).toLocaleDateString(
+                          getLocaleFromLang(i18n.language)
+                        )
+                      })}
                     </p>
                   </div>
                   <div className="mt-auto flex gap-2">
