@@ -75,7 +75,7 @@
     "deleteConfirmTitle": "Slette denne malen?",
     "deleteConfirmDescription": "Dette fjerner malen og alle oppføringene permanent.",
     "deleteConfirmKeyword": "SLETT",
-    "deleteConfirmPlaceholder": "Skriv SLETT"
+    "deleteConfirmPlaceholder": "Skriv SLETT",
     "summary": "Oppsummering",
     "income": "Inntekter",
     "expenses": "Utgifter",
