@@ -11,7 +11,7 @@ import { useCreateMonthlyBudget } from "@/lib/supabase/mutations";
 import HouseholdSetup from "@/components/layout/HouseholdSetup";
 import { formatMonthLabel } from "@/lib/format";
 import { toast } from "sonner";
-import { copyTemplateToMonthlyBudget } from "@/lib/supabase/copy";
+import { copyTemplateToMonthlyAction } from "@/app/actions/copy-template";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabaseQueryKeys } from "@/lib/supabase/queries";
 import TemplatePicker from "@/components/budget/TemplatePicker";
@@ -60,12 +60,16 @@ export default function BudgetsPage() {
     if (!householdId) return;
     const now = new Date();
     try {
-      await copyTemplateToMonthlyBudget(
+      const result = await copyTemplateToMonthlyAction(
         householdId,
         templateId,
         now.getFullYear(),
         now.getMonth() + 1
       );
+      if (!result.ok) {
+        toast.error(t("budgets.createError"));
+        return;
+      }
       queryClient.invalidateQueries({ queryKey: supabaseQueryKeys.budgets });
       toast.success(t("budgets.created"));
     } catch (error) {
