@@ -3,8 +3,8 @@
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { revokeInvite } from "@/lib/supabase/invites";
 import { createClient } from "@/lib/supabase/client";
+import { createInviteTokenAction, revokeInviteAction } from "@/app/actions/invites";
 
 interface InviteActionsProps {
   householdId: string;
@@ -25,19 +25,15 @@ export default function InviteActions({
 
   const handleResend = async () => {
     try {
-      const supabase = createClient();
-      const { data, error } = await supabase.rpc("create_invite_token", {
-        hid: householdId,
-        email: invitedEmail
-      });
-
-      if (error || !data) {
+      const tokenResult = await createInviteTokenAction(householdId, invitedEmail);
+      if (!tokenResult.ok || !tokenResult.token) {
         toast.error(t("members.inviteResendError"));
         return;
       }
 
-      const inviteUrl = `${window.location.origin}/invite?token=${data}`;
+      const inviteUrl = `${window.location.origin}/invite?token=${tokenResult.token}`;
 
+      const supabase = createClient();
       const { error: invokeError } = await supabase.functions.invoke("send-invite", {
         body: {
           email: invitedEmail,
@@ -60,7 +56,11 @@ export default function InviteActions({
 
   const handleRevoke = async () => {
     try {
-      await revokeInvite(memberId);
+      const result = await revokeInviteAction(memberId, householdId);
+      if (!result.ok) {
+        toast.error(t("members.inviteRevokeError"));
+        return;
+      }
       toast.success(t("members.inviteRevoked"));
       onChanged();
     } catch (error) {
