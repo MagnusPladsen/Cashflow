@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,22 +16,25 @@ export default function TemplatesPage() {
   const { data, isLoading } = useTemplatesQuery();
   const templates = data?.templates ?? [];
   const isOwner = data?.household?.role === "owner";
+  const [isPending, startTransition] = useTransition();
 
   const handleCreateTemplate = async () => {
     if (!data?.household?.householdId) return;
-    try {
-      const result = await createTemplateAction(
-        data.household.householdId,
-        t("templates.newTemplateTitle")
-      );
-      if (!result.ok) {
+    startTransition(async () => {
+      try {
+        const result = await createTemplateAction(
+          data.household.householdId,
+          t("templates.newTemplateTitle")
+        );
+        if (!result.ok) {
+          toast.error(t("templates.createError"));
+          return;
+        }
+        toast.success(t("templates.created"));
+      } catch (error) {
         toast.error(t("templates.createError"));
-        return;
       }
-      toast.success(t("templates.created"));
-    } catch (error) {
-      toast.error(t("templates.createError"));
-    }
+    });
   };
 
   return (
@@ -45,7 +49,7 @@ export default function TemplatesPage() {
         <Button
           className="rounded-full"
           onClick={handleCreateTemplate}
-          disabled={!data?.household?.householdId || createTemplate.isPending || !isOwner}
+          disabled={!data?.household?.householdId || isPending || !isOwner}
         >
           {t("templates.newTemplate")}
         </Button>
@@ -68,7 +72,7 @@ export default function TemplatesPage() {
                     <Button
                       className="rounded-full"
                       onClick={handleCreateTemplate}
-                      disabled={!data?.household?.householdId || createTemplate.isPending || !isOwner}
+                      disabled={!data?.household?.householdId || isPending || !isOwner}
                     >
                       {t("templates.newTemplate")}
                     </Button>
