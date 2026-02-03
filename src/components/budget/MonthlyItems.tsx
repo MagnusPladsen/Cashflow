@@ -36,12 +36,16 @@ interface MonthlyItemsProps {
   month: number;
 }
 
-function diffBadge(current: number, baseline?: number | null) {
+function diffBadge(
+  current: number,
+  baseline: number | null | undefined,
+  format: (value: number) => string
+) {
   if (baseline === undefined || baseline === null) return undefined;
   const diff = current - baseline;
   if (diff === 0) return undefined;
   return {
-    value: diff > 0 ? `+${diff}` : `${diff}`,
+    value: diff > 0 ? `+${format(diff)}` : format(diff),
     tone: diff > 0 ? "over" : "under"
   } as { value: string; tone: "over" | "under" };
 }
@@ -217,13 +221,24 @@ export default function MonthlyItems({
         ) : (
           incomes.map((item) => {
             const baseline = templateIncomes.find((tItem) => tItem.id === item.template_income_id)?.amount;
+            const diff = baseline === undefined ? undefined : item.amount - baseline;
+            const progress: { value: number; tone: "over" | "under" } | undefined =
+              baseline && baseline > 0
+                ? {
+                    value: Math.round((item.amount / baseline) * 100),
+                    tone: diff !== undefined && diff > 0 ? "over" : "under"
+                  }
+                : undefined;
             return (
               <EntryCard
                 key={item.id}
                 title={item.name}
                 amount={formatCurrency(item.amount, currency, i18n.language)}
                 meta={t("templates.monthlyAssigned", { name: t("common.memberLabel") })}
-                diff={diffBadge(item.amount, baseline)}
+                diff={diffBadge(item.amount, baseline, (value) =>
+                  formatCurrency(value, currency, i18n.language)
+                )}
+                progress={progress}
                 onSave={canEdit ? (values) => handleUpdateIncome(item.id, values) : undefined}
                 onDelete={canEdit ? () => handleDeleteIncome(item.id) : undefined}
                 initialValues={{ name: item.name, amount: item.amount }}
@@ -249,6 +264,12 @@ export default function MonthlyItems({
           <ExpenseGroup
             items={expenses}
             currency={currency}
+            baselineById={Object.fromEntries(
+              expenses.map((item) => [
+                item.id,
+                templateExpenses.find((tItem) => tItem.id === item.template_expense_id)?.amount
+              ])
+            )}
             onSave={canEdit ? (id, values) => handleUpdateExpense(id, values) : undefined}
             onDelete={canEdit ? (id) => handleDeleteExpense(id) : undefined}
           />
@@ -269,6 +290,14 @@ export default function MonthlyItems({
       ) : (
         allocations.map((item) => {
           const baseline = templateAllocations.find((tItem) => tItem.id === item.template_allocation_id)?.amount;
+          const diff = baseline === undefined ? undefined : item.amount - baseline;
+          const progress: { value: number; tone: "over" | "under" } | undefined =
+            baseline && baseline > 0
+              ? {
+                  value: Math.round((item.amount / baseline) * 100),
+                  tone: diff !== undefined && diff > 0 ? "over" : "under"
+                }
+              : undefined;
           return (
             <EntryCard
               key={item.id}
@@ -284,7 +313,10 @@ export default function MonthlyItems({
                   ? t("templates.labels.savings")
                   : t("templates.labels.monthlyBudget")
               }
-              diff={diffBadge(item.amount, baseline)}
+              diff={diffBadge(item.amount, baseline, (value) =>
+                formatCurrency(value, currency, i18n.language)
+              )}
+              progress={progress}
               onSave={canEdit ? (values) => handleUpdateAllocation(item.id, values) : undefined}
               onDelete={canEdit ? () => handleDeleteAllocation(item.id) : undefined}
               initialValues={{ name: item.name, amount: item.amount }}

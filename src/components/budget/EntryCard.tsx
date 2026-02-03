@@ -15,6 +15,7 @@ interface EntryCardProps {
   meta?: string;
   badge?: string;
   diff?: { value: string; tone: "over" | "under" };
+  progress?: { value: number; tone: "over" | "under" };
   initialValues?: {
     name?: string;
     amount?: number;
@@ -30,6 +31,7 @@ export default function EntryCard({
   meta,
   badge,
   diff,
+  progress,
   initialValues,
   onSave,
   onDelete
@@ -39,38 +41,56 @@ export default function EntryCard({
 
   return (
     <>
-      <Card className="flex items-center justify-between gap-4 border border-border/60 p-4">
-        <div className="space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="font-medium">{title}</p>
-            {badge ? (
-              <Badge variant="secondary" className="rounded-full">
-                {badge}
-              </Badge>
-            ) : null}
-            {diff ? (
-              <Badge
-                className={
-                  diff.tone === "under"
-                    ? "rounded-full bg-emerald-100 text-emerald-700"
-                    : "rounded-full bg-orange-100 text-orange-700"
-                }
-              >
-                {diff.value}
-              </Badge>
+      <Card className="border border-border/60 bg-muted/10 p-4 shadow-sm">
+        <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
+          <div className="space-y-2">
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <p className="text-sm font-semibold leading-tight">{title}</p>
+                {meta ? <p className="text-xs text-muted-foreground">{meta}</p> : null}
+              </div>
+              <p className="text-lg font-semibold tabular-nums">{amount}</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {badge ? (
+                <Badge variant="secondary" className="rounded-full">
+                  {badge}
+                </Badge>
+              ) : null}
+              {diff ? (
+                <Badge
+                  className={
+                    diff.tone === "under"
+                      ? "rounded-full bg-emerald-100 text-emerald-700"
+                      : "rounded-full bg-orange-100 text-orange-700"
+                  }
+                >
+                  {diff.value}
+                </Badge>
+              ) : null}
+            </div>
+            {progress ? (
+              <div className="space-y-1">
+                <div className="h-1.5 w-full rounded-full bg-muted">
+                  <div
+                    className={
+                      progress.tone === "under"
+                        ? "h-1.5 rounded-full bg-emerald-500"
+                        : "h-1.5 rounded-full bg-orange-500"
+                    }
+                    style={{ width: `${Math.min(Math.max(progress.value, 0), 100)}%` }}
+                  />
+                </div>
+              </div>
             ) : null}
           </div>
-          {meta ? <p className="text-xs text-muted-foreground">{meta}</p> : null}
-        </div>
-        <div className="flex items-center gap-4">
-          <p className="text-lg font-semibold tabular-nums">{amount}</p>
           {onSave || onDelete ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 md:justify-end">
               {onSave ? (
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-9 w-9 rounded-full"
+                  className="h-10 w-10 rounded-full"
                   onClick={() => setOpenEditor(true)}
                 >
                   <Edit2 className="h-4 w-4" />
@@ -82,7 +102,7 @@ export default function EntryCard({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-9 w-9 rounded-full text-destructive"
+                      className="h-10 w-10 rounded-full text-destructive"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
