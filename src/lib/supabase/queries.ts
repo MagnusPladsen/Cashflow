@@ -30,11 +30,15 @@ async function fetchActiveHousehold() {
   if (error) throw error;
   if (!data) return null;
 
+  const householdInfo = Array.isArray(data.households)
+    ? data.households[0]
+    : data.households;
+
   return {
     householdId: data.household_id as string,
     role: data.role as string,
-    name: (data.households as { name: string })?.name ?? "",
-    currency: (data.households as { currency: string })?.currency ?? "NOK"
+    name: householdInfo?.name ?? "",
+    currency: householdInfo?.currency ?? "NOK"
   };
 }
 

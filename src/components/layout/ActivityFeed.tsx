@@ -95,9 +95,9 @@ export default function ActivityFeed({ householdId }: ActivityFeedProps) {
                         })}
                       </p>
                     )}
-                    {item.profiles?.full_name ? (
+                    {item.profiles?.[0]?.full_name ? (
                       <p className="text-xs text-muted-foreground">
-                        {t("activity.by", { name: item.profiles.full_name })}
+                        {t("activity.by", { name: item.profiles[0].full_name })}
                       </p>
                     ) : null}
                   </div>
