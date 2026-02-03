@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "next/navigation";
 import BudgetTabs from "@/components/budget/BudgetTabs";
 import SummaryCards from "@/components/budget/SummaryCards";
+import BudgetSummaryBar from "@/components/budget/BudgetSummaryBar";
+import BudgetCharts from "@/components/budget/BudgetCharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMonthlyBudgetQuery } from "@/lib/supabase/queries";
 import { formatCurrency } from "@/lib/format";
@@ -158,6 +160,16 @@ export default function MonthlyBudgetPage() {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
         <div className="order-2 space-y-6 lg:order-1">
+          {!isLoading && data ? (
+            <BudgetSummaryBar
+              used={expensesTotal + allocationsTotal}
+              total={incomeTotal}
+              currency={householdCurrency}
+              locale={i18n.language}
+              label={t("budgets.summaryLabel")}
+              remainingLabel={t("common.remaining")}
+            />
+          ) : null}
           <BudgetTabs
             defaultValue="expenses"
             tabs={[
@@ -240,6 +252,25 @@ export default function MonthlyBudgetPage() {
               }
             ]}
           />
+          {!isLoading && data ? (
+            <div className="space-y-3">
+              <div>
+                <h2 className="text-lg font-semibold">{t("budgets.chartsTitle")}</h2>
+                <p className="text-sm text-muted-foreground">{t("budgets.chartsSubtitle")}</p>
+              </div>
+              <BudgetCharts
+                expenses={data.budget?.monthly_expenses ?? []}
+                allocations={data.budget?.monthly_allocations ?? []}
+                currency={householdCurrency}
+                labels={{
+                  emptyExpenses: t("budgets.chartsEmpty"),
+                  transfers: t("budgets.chartsTransfers"),
+                  monthly: t("budgets.chartsMonthly"),
+                  savings: t("budgets.chartsSavings")
+                }}
+              />
+            </div>
+          ) : null}
         </div>
         <div className="order-1 space-y-4 lg:order-2 lg:sticky lg:top-24">
           {isLoading || !data ? (

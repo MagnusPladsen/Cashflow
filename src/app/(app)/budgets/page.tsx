@@ -8,7 +8,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBudgetsQuery } from "@/lib/supabase/queries";
 import { useCreateMonthlyBudget } from "@/lib/supabase/mutations";
-import HouseholdSetup from "@/components/layout/HouseholdSetup";
 import { formatMonthLabel } from "@/lib/format";
 import { toast } from "sonner";
 import { copyTemplateToMonthlyAction } from "@/app/actions/copy-template";
@@ -117,8 +116,6 @@ export default function BudgetsPage() {
           {t("budgets.copyFromTemplate")}
         </Button>
       </div>
-
-      {!householdId && !isLoading ? <HouseholdSetup /> : null}
 
       <div className="grid gap-4 md:grid-cols-2">
         {isLoading

@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTemplatesQuery } from "@/lib/supabase/queries";
-import HouseholdSetup from "@/components/layout/HouseholdSetup";
 import { toast } from "sonner";
 import { createTemplateAction } from "@/app/actions/templates-create";
 import { getLocaleFromLang } from "@/lib/format";
@@ -55,8 +54,6 @@ export default function TemplatesPage() {
           {t("templates.newTemplate")}
         </Button>
       </div>
-
-      {!data?.household?.householdId && !isLoading ? <HouseholdSetup /> : null}
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {isLoading

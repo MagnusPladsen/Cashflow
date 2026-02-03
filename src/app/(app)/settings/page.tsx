@@ -11,7 +11,6 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { useHouseholdQuery } from "@/lib/supabase/queries";
-import HouseholdSetup from "@/components/layout/HouseholdSetup";
 import InviteMember from "@/components/layout/InviteMember";
 import MemberList from "@/components/layout/MemberList";
 
@@ -29,8 +28,6 @@ export default function SettingsPage() {
           {t("settings.subtitle")}
         </p>
       </div>
-
-      {!householdId && !isLoading ? <HouseholdSetup /> : null}
 
       <Card className="border border-border/60">
         <CardContent className="space-y-4 p-6">
