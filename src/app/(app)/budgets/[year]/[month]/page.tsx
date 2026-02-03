@@ -95,6 +95,17 @@ export default function MonthlyBudgetPage() {
       (sum, item) => sum + Number(item.amount ?? 0),
       0
     ) ?? 0;
+  const savingsTotal =
+    data?.budget?.monthly_allocations?.reduce(
+      (sum, item) => sum + (item.type === "savings" ? Number(item.amount ?? 0) : 0),
+      0
+    ) ?? 0;
+  const spendingTransferTotal =
+    data?.budget?.monthly_expenses?.reduce(
+      (sum, item) =>
+        sum + (item.type === "spending_transfer" ? Number(item.amount ?? 0) : 0),
+      0
+    ) ?? 0;
   const unallocatedTotal = incomeTotal - expensesTotal - allocationsTotal;
   const templateIncomeTotal =
     data?.template?.template_incomes?.reduce(
@@ -238,64 +249,88 @@ export default function MonthlyBudgetPage() {
               ))}
             </div>
           ) : (
-            <SummaryCards
-              variant="stack"
-              items={[
-                {
-                  label: t("templates.income"),
-                  value: formatCurrency(incomeTotal, householdCurrency, i18n.language),
-                  sub: data?.template
-                    ? `${t("budgets.templateValue")}: ${formatCurrency(
-                        templateIncomeTotal,
-                        householdCurrency,
-                        i18n.language
-                      )}`
-                    : undefined
-                },
-                {
-                  label: t("templates.expenses"),
-                  value: formatCurrency(expensesTotal, householdCurrency, i18n.language),
-                  sub: data?.template
-                    ? `${t("budgets.templateValue")}: ${formatCurrency(
-                        templateExpensesTotal,
-                        householdCurrency,
-                        i18n.language
-                      )}`
-                    : undefined
-                },
-                {
-                  label: t("templates.allocations"),
-                  value: formatCurrency(
-                    allocationsTotal,
-                    householdCurrency,
-                    i18n.language
-                  ),
-                  sub: data?.template
-                    ? `${t("budgets.templateValue")}: ${formatCurrency(
-                        templateAllocationsTotal,
-                        householdCurrency,
-                        i18n.language
-                      )}`
-                    : undefined
-                },
-                {
-                  label: t("templates.unallocated"),
-                  value: formatCurrency(
-                    unallocatedTotal,
-                    householdCurrency,
-                    i18n.language
-                  ),
-                  tone: unallocatedTotal >= 0 ? "good" : "warn",
-                  sub: data?.template
-                    ? `${t("budgets.templateValue")}: ${formatCurrency(
-                        templateUnallocatedTotal,
-                        householdCurrency,
-                        i18n.language
-                      )}`
-                    : undefined
-                }
-              ]}
-            />
+            <div className="space-y-4">
+              <SummaryCards
+                variant="stack"
+                items={[
+                  {
+                    label: t("templates.income"),
+                    value: formatCurrency(incomeTotal, householdCurrency, i18n.language),
+                    sub: data?.template
+                      ? `${t("budgets.templateValue")}: ${formatCurrency(
+                          templateIncomeTotal,
+                          householdCurrency,
+                          i18n.language
+                        )}`
+                      : undefined
+                  },
+                  {
+                    label: t("templates.expenses"),
+                    value: formatCurrency(expensesTotal, householdCurrency, i18n.language),
+                    sub: data?.template
+                      ? `${t("budgets.templateValue")}: ${formatCurrency(
+                          templateExpensesTotal,
+                          householdCurrency,
+                          i18n.language
+                        )}`
+                      : undefined
+                  },
+                  {
+                    label: t("templates.allocations"),
+                    value: formatCurrency(
+                      allocationsTotal,
+                      householdCurrency,
+                      i18n.language
+                    ),
+                    sub: data?.template
+                      ? `${t("budgets.templateValue")}: ${formatCurrency(
+                          templateAllocationsTotal,
+                          householdCurrency,
+                          i18n.language
+                        )}`
+                      : undefined
+                  },
+                  {
+                    label: t("templates.unallocated"),
+                    value: formatCurrency(
+                      unallocatedTotal,
+                      householdCurrency,
+                      i18n.language
+                    ),
+                    tone: unallocatedTotal >= 0 ? "good" : "warn",
+                    sub: data?.template
+                      ? `${t("budgets.templateValue")}: ${formatCurrency(
+                          templateUnallocatedTotal,
+                          householdCurrency,
+                          i18n.language
+                        )}`
+                      : undefined
+                  }
+                ]}
+              />
+              <div className="rounded-2xl border border-border/60 bg-card p-4">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    {t("budgets.spendingTransfers")}
+                  </span>
+                  <span className="font-semibold">
+                    {formatCurrency(
+                      spendingTransferTotal,
+                      householdCurrency,
+                      i18n.language
+                    )}
+                  </span>
+                </div>
+                <div className="mt-2 flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    {t("budgets.savingsTotal")}
+                  </span>
+                  <span className="font-semibold">
+                    {formatCurrency(savingsTotal, householdCurrency, i18n.language)}
+                  </span>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>

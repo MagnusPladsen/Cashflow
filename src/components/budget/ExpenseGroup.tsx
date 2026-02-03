@@ -4,20 +4,33 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import EntryCard from "@/components/budget/EntryCard";
 import { formatCurrency } from "@/lib/format";
 import { useTranslation } from "react-i18next";
+import type { EntryEditorConfig } from "./EntryEditor";
 
 interface ExpenseItem {
   id: string;
   name: string;
   amount: number;
   category: string;
+  type?: "expense" | "spending_transfer";
+  spending_account?: string | null;
 }
 
 interface ExpenseGroupProps {
   items: ExpenseItem[];
   currency: string;
   baselineById?: Record<string, number | undefined>;
-  onSave?: (id: string, values: { name: string; amount: number; details: string }) => void;
+  onSave?: (
+    id: string,
+    values: {
+      name: string;
+      amount: number;
+      details: string;
+      type?: string;
+      account?: string;
+    }
+  ) => void;
   onDelete?: (id: string) => void;
+  editorConfig?: EntryEditorConfig;
 }
 
 export default function ExpenseGroup({
@@ -25,9 +38,10 @@ export default function ExpenseGroup({
   currency,
   baselineById,
   onSave,
-  onDelete
+  onDelete,
+  editorConfig
 }: ExpenseGroupProps) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const grouped = items.reduce<Record<string, ExpenseItem[]>>((acc, item) => {
     acc[item.category] = acc[item.category] ?? [];
     acc[item.category].push(item);
@@ -68,12 +82,25 @@ export default function ExpenseGroup({
                   key={item.id}
                   title={item.name}
                   amount={formatCurrency(item.amount, currency, i18n.language)}
-                  meta={category}
+                  meta={
+                    item.type === "spending_transfer"
+                      ? t("budgets.spendingTransferMeta", {
+                          account: item.spending_account || t("budgets.spendingAccountDefault")
+                        })
+                      : category
+                  }
                   diff={diffBadge}
                   progress={progress}
                   onSave={onSave ? (values) => onSave(item.id, values) : undefined}
                   onDelete={onDelete ? () => onDelete(item.id) : undefined}
-                  initialValues={{ name: item.name, amount: item.amount, details: item.category }}
+                  initialValues={{
+                    name: item.name,
+                    amount: item.amount,
+                    details: item.category,
+                    type: item.type ?? "expense",
+                    account: item.spending_account ?? ""
+                  }}
+                  editorConfig={editorConfig}
                 />
               );
             })}

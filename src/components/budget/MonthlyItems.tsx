@@ -9,6 +9,7 @@ import EntryCard from "@/components/budget/EntryCard";
 import ExpenseGroup from "@/components/budget/ExpenseGroup";
 import { formatCurrency } from "@/lib/format";
 import { supabaseQueryKeys } from "@/lib/supabase/queries";
+import type { EntryEditorConfig } from "@/components/budget/EntryEditor";
 import {
   createMonthlyIncome,
   createMonthlyExpense,
@@ -27,7 +28,15 @@ interface MonthlyItemsProps {
   mode: "income" | "expenses" | "allocations";
   canEdit?: boolean;
   incomes: Array<{ id: string; name: string; amount: number; template_income_id?: string | null }>;
-  expenses: Array<{ id: string; name: string; amount: number; category: string; template_expense_id?: string | null }>;
+  expenses: Array<{
+    id: string;
+    name: string;
+    amount: number;
+    category: string;
+    template_expense_id?: string | null;
+    type?: "expense" | "spending_transfer";
+    spending_account?: string | null;
+  }>;
   allocations: Array<{ id: string; name: string; amount: number; type: "savings" | "monthly_budget"; template_allocation_id?: string | null }>;
   templateIncomes: Array<{ id: string; amount: number }>;
   templateExpenses: Array<{ id: string; amount: number }>;
@@ -68,11 +77,36 @@ export default function MonthlyItems({
   const [busy, setBusy] = useState(false);
   const queryClient = useQueryClient();
 
+  const expenseEditorConfig: EntryEditorConfig = {
+    detailsLabel: t("budgets.expenseCategoryLabel"),
+    detailsPlaceholder: t("budgets.expenseCategoryPlaceholder"),
+    detailsHint: t("budgets.expenseCategoryHint"),
+    typeLabel: t("budgets.expenseTypeLabel"),
+    typeHint: t("budgets.expenseTypeHint"),
+    typeOptions: [
+      { value: "expense", label: t("budgets.expenseTypeExpense") },
+      { value: "spending_transfer", label: t("budgets.expenseTypeTransfer") }
+    ],
+    accountLabel: t("budgets.spendingAccountLabel"),
+    accountPlaceholder: t("budgets.spendingAccountPlaceholder"),
+    accountHint: t("budgets.spendingAccountHint"),
+    showAccountWhenType: "spending_transfer"
+  };
+
+  const allocationEditorConfig: EntryEditorConfig = {
+    typeLabel: t("budgets.allocationTypeLabel"),
+    typeHint: t("budgets.allocationTypeHint"),
+    typeOptions: [
+      { value: "monthly_budget", label: t("budgets.allocationTypeMonthly") },
+      { value: "savings", label: t("budgets.allocationTypeSavings") }
+    ]
+  };
+
   const refresh = () => {
     queryClient.invalidateQueries({ queryKey: supabaseQueryKeys.monthlyBudget(year, month) });
   };
 
-  const handleCreateIncome = async (values: { name: string; amount: number }) => {
+  const handleCreateIncome = async (values: { name: string; amount: number; details?: string; type?: string; account?: string }) => {
     setBusy(true);
     try {
       await createMonthlyIncome(budgetId, {
@@ -88,13 +122,15 @@ export default function MonthlyItems({
     }
   };
 
-  const handleCreateExpense = async (values: { name: string; amount: number; details: string }) => {
+  const handleCreateExpense = async (values: { name: string; amount: number; details: string; type?: string; account?: string }) => {
     setBusy(true);
     try {
       await createMonthlyExpense(budgetId, {
         name: values.name,
         amount: values.amount,
-        category: values.details || "General"
+        category: values.details || "General",
+        type: values.type === "spending_transfer" ? "spending_transfer" : "expense",
+        spending_account: values.account
       });
       toast.success(t("common.saved"));
       refresh();
@@ -105,13 +141,13 @@ export default function MonthlyItems({
     }
   };
 
-  const handleCreateAllocation = async (values: { name: string; amount: number }) => {
+  const handleCreateAllocation = async (values: { name: string; amount: number; type?: string }) => {
     setBusy(true);
     try {
       await createMonthlyAllocation(budgetId, {
         name: values.name,
         amount: values.amount,
-        type: "monthly_budget"
+        type: values.type === "savings" ? "savings" : "monthly_budget"
       });
       toast.success(t("common.saved"));
       refresh();
@@ -122,7 +158,7 @@ export default function MonthlyItems({
     }
   };
 
-  const handleUpdateIncome = async (id: string, values: { name: string; amount: number }) => {
+  const handleUpdateIncome = async (id: string, values: { name: string; amount: number; details?: string; type?: string; account?: string }) => {
     setBusy(true);
     try {
       await updateMonthlyIncome(id, { name: values.name, amount: values.amount });
@@ -135,13 +171,15 @@ export default function MonthlyItems({
     }
   };
 
-  const handleUpdateExpense = async (id: string, values: { name: string; amount: number; details: string }) => {
+  const handleUpdateExpense = async (id: string, values: { name: string; amount: number; details: string; type?: string; account?: string }) => {
     setBusy(true);
     try {
       await updateMonthlyExpense(id, {
         name: values.name,
         amount: values.amount,
-        category: values.details || "General"
+        category: values.details || "General",
+        type: values.type === "spending_transfer" ? "spending_transfer" : "expense",
+        spending_account: values.account
       });
       toast.success(t("common.saved"));
       refresh();
@@ -152,13 +190,13 @@ export default function MonthlyItems({
     }
   };
 
-  const handleUpdateAllocation = async (id: string, values: { name: string; amount: number }) => {
+  const handleUpdateAllocation = async (id: string, values: { name: string; amount: number; type?: string }) => {
     setBusy(true);
     try {
       await updateMonthlyAllocation(id, {
         name: values.name,
         amount: values.amount,
-        type: "monthly_budget"
+        type: values.type === "savings" ? "savings" : "monthly_budget"
       });
       toast.success(t("common.saved"));
       refresh();
@@ -257,6 +295,10 @@ export default function MonthlyItems({
         actionLabel={t("templates.addExpense")}
         disabled={busy || !canEdit}
         onCreate={canEdit ? handleCreateExpense : undefined}
+        description={t("budgets.expensesDescription")}
+        tip={t("budgets.expensesTip")}
+        tooltip={t("budgets.expensesTooltip")}
+        editorConfig={expenseEditorConfig}
       >
         {expenses.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("budgets.emptyItems")}</p>
@@ -264,6 +306,7 @@ export default function MonthlyItems({
           <ExpenseGroup
             items={expenses}
             currency={currency}
+            editorConfig={expenseEditorConfig}
             baselineById={Object.fromEntries(
               expenses.map((item) => [
                 item.id,
@@ -284,6 +327,10 @@ export default function MonthlyItems({
       actionLabel={t("templates.addAllocation")}
       disabled={busy || !canEdit}
       onCreate={canEdit ? handleCreateAllocation : undefined}
+      description={t("budgets.allocationsDescription")}
+      tip={t("budgets.allocationsTip")}
+      tooltip={t("budgets.allocationsTooltip")}
+      editorConfig={allocationEditorConfig}
     >
       {allocations.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("budgets.emptyItems")}</p>
@@ -319,7 +366,8 @@ export default function MonthlyItems({
               progress={progress}
               onSave={canEdit ? (values) => handleUpdateAllocation(item.id, values) : undefined}
               onDelete={canEdit ? () => handleDeleteAllocation(item.id) : undefined}
-              initialValues={{ name: item.name, amount: item.amount }}
+              initialValues={{ name: item.name, amount: item.amount, type: item.type }}
+              editorConfig={allocationEditorConfig}
             />
           );
         })
