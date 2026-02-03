@@ -136,7 +136,7 @@
     "expensesDescription": "Track day-to-day spending and transfers to a spending account.",
     "expensesTooltip": "Use transfers when you move money into a card or sub-account to spend this month.",
     "expensesTip": "Envelope-style categories work best for variable spending like groceries and dining.",
-    "allocationsDescription": "Set aside money for savings or monthly spending pools.",
+    "allocationsDescription": "Set aside money for savings or sinking funds for irregular expenses.",
     "allocationsTooltip": "Savings are money you do not plan to spend this month.",
     "allocationsTip": "Pay yourself first by moving savings out before you plan the rest of the month.",
     "expenseCategoryLabel": "Category",

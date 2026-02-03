@@ -136,7 +136,7 @@
     "expensesDescription": "Før opp daglig forbruk og overføringer til en brukskonto.",
     "expensesTooltip": "Bruk overføring når du flytter penger til kort eller underkonto for bruk denne måneden.",
     "expensesTip": "Konvolutt-kategorier fungerer best for variabelt forbruk som mat og uteliv.",
-    "allocationsDescription": "Sett av penger til sparing eller månedlige brukspotter.",
+    "allocationsDescription": "Sett av penger til sparing eller «sinking funds» for uregelmessige utgifter.",
     "allocationsTooltip": "Sparing er penger du ikke planlegger å bruke denne måneden.",
     "allocationsTip": "Betal deg selv først ved å flytte sparing før resten planlegges.",
     "expenseCategoryLabel": "Kategori",
