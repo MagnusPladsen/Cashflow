@@ -18,10 +18,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const supabase = createClient();
-
   const handleOAuth = async (provider: "google" | "apple") => {
     setLoading(true);
+    const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
@@ -37,6 +36,7 @@ export default function LoginPage() {
 
   const handleEmailAuth = async () => {
     setLoading(true);
+    const supabase = createClient();
     const action =
       mode === "signIn"
         ? supabase.auth.signInWithPassword({ email, password })

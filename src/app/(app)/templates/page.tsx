@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,28 +10,32 @@ import { useTemplatesQuery } from "@/lib/supabase/queries";
 import HouseholdSetup from "@/components/layout/HouseholdSetup";
 import { toast } from "sonner";
 import { createTemplateAction } from "@/app/actions/templates-create";
+import { getLocaleFromLang } from "@/lib/format";
 
 export default function TemplatesPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data, isLoading } = useTemplatesQuery();
   const templates = data?.templates ?? [];
   const isOwner = data?.household?.role === "owner";
+  const [isPending, startTransition] = useTransition();
 
   const handleCreateTemplate = async () => {
     if (!data?.household?.householdId) return;
-    try {
-      const result = await createTemplateAction(
-        data.household.householdId,
-        t("templates.newTemplateTitle")
-      );
-      if (!result.ok) {
+    startTransition(async () => {
+      try {
+        const result = await createTemplateAction(
+          data.household.householdId,
+          t("templates.newTemplateTitle")
+        );
+        if (!result.ok) {
+          toast.error(t("templates.createError"));
+          return;
+        }
+        toast.success(t("templates.created"));
+      } catch (error) {
         toast.error(t("templates.createError"));
-        return;
       }
-      toast.success(t("templates.created"));
-    } catch (error) {
-      toast.error(t("templates.createError"));
-    }
+    });
   };
 
   return (
@@ -45,7 +50,7 @@ export default function TemplatesPage() {
         <Button
           className="rounded-full"
           onClick={handleCreateTemplate}
-          disabled={!data?.household?.householdId || createTemplate.isPending || !isOwner}
+          disabled={!data?.household?.householdId || isPending || !isOwner}
         >
           {t("templates.newTemplate")}
         </Button>
@@ -68,7 +73,7 @@ export default function TemplatesPage() {
                     <Button
                       className="rounded-full"
                       onClick={handleCreateTemplate}
-                      disabled={!data?.household?.householdId || createTemplate.isPending || !isOwner}
+                      disabled={!data?.household?.householdId || isPending || !isOwner}
                     >
                       {t("templates.newTemplate")}
                     </Button>
@@ -81,7 +86,11 @@ export default function TemplatesPage() {
                   <div>
                     <h2 className="text-lg font-semibold">{template.name}</h2>
                     <p className="text-sm text-muted-foreground">
-                      {t("templates.updated", { time: template.updated })}
+                      {t("templates.updated", {
+                        time: new Date(template.created_at).toLocaleDateString(
+                          getLocaleFromLang(i18n.language)
+                        )
+                      })}
                     </p>
                   </div>
                   <div className="mt-auto flex gap-2">
