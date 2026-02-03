@@ -75,7 +75,7 @@
     "deleteConfirmTitle": "Delete this template?",
     "deleteConfirmDescription": "This will permanently remove the template and its entries.",
     "deleteConfirmKeyword": "DELETE",
-    "deleteConfirmPlaceholder": "Type DELETE"
+    "deleteConfirmPlaceholder": "Type DELETE",
     "summary": "Summary",
     "income": "Income",
     "expenses": "Expenses",
