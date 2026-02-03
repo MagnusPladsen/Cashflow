@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
+import { getSiteUrl } from "@/lib/supabase/url";
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -24,7 +25,7 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`
+        redirectTo: `${getSiteUrl()}/auth/callback`
       }
     });
 
@@ -40,7 +41,11 @@ export default function LoginPage() {
     const action =
       mode === "signIn"
         ? supabase.auth.signInWithPassword({ email, password })
-        : supabase.auth.signUp({ email, password });
+        : supabase.auth.signUp({
+            email,
+            password,
+            options: { emailRedirectTo: `${getSiteUrl()}/auth/callback` }
+          });
 
     const { error } = await action;
     if (error) {

@@ -15,6 +15,7 @@ interface ExpenseItem {
 interface ExpenseGroupProps {
   items: ExpenseItem[];
   currency: string;
+  baselineById?: Record<string, number | undefined>;
   onSave?: (id: string, values: { name: string; amount: number; details: string }) => void;
   onDelete?: (id: string) => void;
 }
@@ -22,6 +23,7 @@ interface ExpenseGroupProps {
 export default function ExpenseGroup({
   items,
   currency,
+  baselineById,
   onSave,
   onDelete
 }: ExpenseGroupProps) {
@@ -40,17 +42,41 @@ export default function ExpenseGroup({
             {category} ({entries.length})
           </AccordionTrigger>
           <AccordionContent className="space-y-3 pb-4">
-            {entries.map((item) => (
-              <EntryCard
-                key={item.id}
-                title={item.name}
-                amount={formatCurrency(item.amount, currency, i18n.language)}
-                meta={category}
-                onSave={onSave ? (values) => onSave(item.id, values) : undefined}
-                onDelete={onDelete ? () => onDelete(item.id) : undefined}
-                initialValues={{ name: item.name, amount: item.amount, details: item.category }}
-              />
-            ))}
+            {entries.map((item) => {
+              const baseline = baselineById?.[item.id];
+              const diff = baseline === undefined ? undefined : item.amount - baseline;
+              const diffBadge: { value: string; tone: "over" | "under" } | undefined =
+                diff !== undefined && diff !== 0
+                  ? {
+                      value:
+                        diff > 0
+                          ? `+${formatCurrency(diff, currency, i18n.language)}`
+                          : formatCurrency(diff, currency, i18n.language),
+                      tone: diff > 0 ? "over" : "under"
+                    }
+                  : undefined;
+              const progress: { value: number; tone: "over" | "under" } | undefined =
+                baseline && baseline > 0
+                  ? {
+                      value: Math.round((item.amount / baseline) * 100),
+                      tone: diff !== undefined && diff > 0 ? "over" : "under"
+                    }
+                  : undefined;
+
+              return (
+                <EntryCard
+                  key={item.id}
+                  title={item.name}
+                  amount={formatCurrency(item.amount, currency, i18n.language)}
+                  meta={category}
+                  diff={diffBadge}
+                  progress={progress}
+                  onSave={onSave ? (values) => onSave(item.id, values) : undefined}
+                  onDelete={onDelete ? () => onDelete(item.id) : undefined}
+                  initialValues={{ name: item.name, amount: item.amount, details: item.category }}
+                />
+              );
+            })}
           </AccordionContent>
         </AccordionItem>
       ))}
