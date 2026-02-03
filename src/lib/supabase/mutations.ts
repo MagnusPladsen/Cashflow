@@ -1,8 +1,9 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createClient } from "@/lib/supabase/client";
 import { supabaseQueryKeys } from "@/lib/supabase/queries";
+import { createHouseholdAction } from "@/app/actions/households";
+import { createClient } from "@/lib/supabase/client";
 
 interface CreateHouseholdInput {
   name: string;
@@ -30,29 +31,11 @@ export const useCreateHousehold = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ name, currency }: CreateHouseholdInput) => {
-      const supabase = createClient();
-      const {
-        data: { user }
-      } = await supabase.auth.getUser();
-
-      if (!user) throw new Error("Not authenticated");
-
-      const { data: household, error } = await supabase
-        .from("households")
-        .insert({ name, currency, created_by: user.id })
-        .select("id, name, currency")
-        .single();
-
-      if (error) throw error;
-
-      await supabase.from("household_members").insert({
-        household_id: household.id,
-        user_id: user.id,
-        role: "owner",
-        status: "active"
-      });
-
-      return household;
+      const result = await createHouseholdAction(name, currency);
+      if (!result.ok || !result.household) {
+        throw new Error(result.message ?? "Household create failed");
+      }
+      return result.household;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: supabaseQueryKeys.household });
