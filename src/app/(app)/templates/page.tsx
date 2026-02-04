@@ -10,6 +10,7 @@ import { useTemplatesQuery } from "@/lib/supabase/queries";
 import { toast } from "sonner";
 import { createTemplateAction } from "@/app/actions/templates-create";
 import { getLocaleFromLang } from "@/lib/format";
+import NoHouseholdNotice from "@/components/layout/NoHouseholdNotice";
 
 export default function TemplatesPage() {
   const { t, i18n } = useTranslation();
@@ -17,6 +18,10 @@ export default function TemplatesPage() {
   const templates = data?.templates ?? [];
   const isOwner = data?.household?.role === "owner";
   const [isPending, startTransition] = useTransition();
+
+  if (!data?.household?.householdId && !isLoading) {
+    return <NoHouseholdNotice />;
+  }
 
   const handleCreateTemplate = async () => {
     if (!data?.household?.householdId) return;

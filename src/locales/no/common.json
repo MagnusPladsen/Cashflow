@@ -183,6 +183,9 @@
   "household": {
     "setupTitle": "Sett opp husholdet",
     "setupSubtitle": "Legg til navn og standardvaluta for å komme i gang.",
+    "noticeTitle": "Sett opp husholdet først",
+    "noticeBody": "Opprett hushold på dashbordet for å bruke budsjetter, maler og innstillinger.",
+    "noticeCta": "Gå til dashbord",
     "name": "Husholdningsnavn",
     "namePlaceholder": "Cashflow-familien",
     "create": "Opprett hushold",
