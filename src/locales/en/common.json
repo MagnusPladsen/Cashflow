@@ -170,7 +170,10 @@
     "chartsEmpty": "No expense data yet",
     "chartsTransfers": "Transfers",
     "chartsMonthly": "Monthly budget",
-    "chartsSavings": "Savings"
+    "chartsSavings": "Savings",
+    "budgetedLabel": "Budgeted {{amount}}",
+    "remainingLabel": "Remaining {{amount}}",
+    "quickAdd": "Quick add"
   },
   "settings": {
     "subtitle": "Manage household members and currency settings.",

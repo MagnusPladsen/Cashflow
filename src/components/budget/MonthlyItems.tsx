@@ -253,6 +253,8 @@ export default function MonthlyItems({
         actionLabel={t("templates.addIncome")}
         disabled={busy || !canEdit}
         onCreate={canEdit ? handleCreateIncome : undefined}
+        quickAdd
+        quickAddLabel={t("budgets.quickAdd")}
       >
         {incomes.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("budgets.emptyItems")}</p>
@@ -267,6 +269,18 @@ export default function MonthlyItems({
                     tone: diff !== undefined && diff > 0 ? "over" : "under"
                   }
                 : undefined;
+            const budgeted =
+              baseline !== undefined
+                ? t("budgets.budgetedLabel", {
+                    amount: formatCurrency(baseline, currency, i18n.language)
+                  })
+                : undefined;
+            const remaining =
+              baseline !== undefined
+                ? t("budgets.remainingLabel", {
+                    amount: formatCurrency(baseline - item.amount, currency, i18n.language)
+                  })
+                : undefined;
             return (
               <EntryCard
                 key={item.id}
@@ -277,6 +291,9 @@ export default function MonthlyItems({
                   formatCurrency(value, currency, i18n.language)
                 )}
                 progress={progress}
+                budgeted={budgeted}
+                remaining={remaining}
+                remainingTone={baseline !== undefined && item.amount > baseline ? "warn" : "good"}
                 onSave={canEdit ? (values) => handleUpdateIncome(item.id, values) : undefined}
                 onDelete={canEdit ? () => handleDeleteIncome(item.id) : undefined}
                 initialValues={{ name: item.name, amount: item.amount }}
@@ -299,6 +316,8 @@ export default function MonthlyItems({
         tip={t("budgets.expensesTip")}
         tooltip={t("budgets.expensesTooltip")}
         editorConfig={expenseEditorConfig}
+        quickAdd
+        quickAddLabel={t("budgets.quickAdd")}
       >
         {expenses.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("budgets.emptyItems")}</p>
@@ -331,6 +350,8 @@ export default function MonthlyItems({
       tip={t("budgets.allocationsTip")}
       tooltip={t("budgets.allocationsTooltip")}
       editorConfig={allocationEditorConfig}
+      quickAdd
+      quickAddLabel={t("budgets.quickAdd")}
     >
       {allocations.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("budgets.emptyItems")}</p>
@@ -344,6 +365,18 @@ export default function MonthlyItems({
                   value: Math.round((item.amount / baseline) * 100),
                   tone: diff !== undefined && diff > 0 ? "over" : "under"
                 }
+              : undefined;
+          const budgeted =
+            baseline !== undefined
+              ? t("budgets.budgetedLabel", {
+                  amount: formatCurrency(baseline, currency, i18n.language)
+                })
+              : undefined;
+          const remaining =
+            baseline !== undefined
+              ? t("budgets.remainingLabel", {
+                  amount: formatCurrency(baseline - item.amount, currency, i18n.language)
+                })
               : undefined;
           return (
             <EntryCard
@@ -364,6 +397,9 @@ export default function MonthlyItems({
                 formatCurrency(value, currency, i18n.language)
               )}
               progress={progress}
+              budgeted={budgeted}
+              remaining={remaining}
+              remainingTone={baseline !== undefined && item.amount > baseline ? "warn" : "good"}
               onSave={canEdit ? (values) => handleUpdateAllocation(item.id, values) : undefined}
               onDelete={canEdit ? () => handleDeleteAllocation(item.id) : undefined}
               initialValues={{ name: item.name, amount: item.amount, type: item.type }}

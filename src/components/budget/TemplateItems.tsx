@@ -227,6 +227,8 @@ export default function TemplateItems({
         actionLabel={t("templates.addIncome")}
         disabled={busy || !canEdit}
         onCreate={canEdit ? handleCreateIncome : undefined}
+        quickAdd
+        quickAddLabel={t("budgets.quickAdd")}
       >
         {incomes.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("templates.emptyItems")}</p>
@@ -258,6 +260,8 @@ export default function TemplateItems({
         tip={t("budgets.expensesTip")}
         tooltip={t("budgets.expensesTooltip")}
         editorConfig={expenseEditorConfig}
+        quickAdd
+        quickAddLabel={t("budgets.quickAdd")}
       >
         {expenses.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("templates.emptyItems")}</p>
@@ -301,6 +305,8 @@ export default function TemplateItems({
       tip={t("budgets.allocationsTip")}
       tooltip={t("budgets.allocationsTooltip")}
       editorConfig={allocationEditorConfig}
+      quickAdd
+      quickAddLabel={t("budgets.quickAdd")}
     >
       {allocations.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("templates.emptyItems")}</p>
