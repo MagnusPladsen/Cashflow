@@ -264,6 +264,13 @@ export default function TemplateItems({
         quickAddLabel={t("budgets.quickAdd")}
         recentDetailsKey="expense-categories"
         recentDetailsLabel={t("budgets.recentCategories")}
+        suggestionChips={[
+          t("budgets.categoryGroceries"),
+          t("budgets.categoryTransport"),
+          t("budgets.categoryUtilities"),
+          t("budgets.categoryRent"),
+          t("budgets.categoryDining")
+        ]}
       >
         {expenses.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("templates.emptyItems")}</p>

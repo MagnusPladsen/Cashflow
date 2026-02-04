@@ -36,6 +36,7 @@ interface CardListSectionProps {
   quickAddLabel?: string;
   recentDetailsKey?: string;
   recentDetailsLabel?: string;
+  suggestionChips?: string[];
 }
 
 export default function CardListSection({
@@ -51,7 +52,8 @@ export default function CardListSection({
   quickAdd,
   quickAddLabel,
   recentDetailsKey,
-  recentDetailsLabel
+  recentDetailsLabel,
+  suggestionChips
 }: CardListSectionProps) {
   const [openEditor, setOpenEditor] = useState(false);
   const [qaName, setQaName] = useState("");
@@ -206,14 +208,24 @@ export default function CardListSection({
               />
             </div>
           </div>
-          {recentDetails.length ? (
+          {recentDetails.length || suggestionChips?.length ? (
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <span className="text-xs text-muted-foreground">
                 {recentDetailsLabel ?? "Recent"}
               </span>
               {recentDetails.map((item) => (
                 <button
-                  key={item}
+                  key={`recent-${item}`}
+                  type="button"
+                  className="rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground hover:bg-muted"
+                  onClick={() => setQaDetails(item)}
+                >
+                  {item}
+                </button>
+              ))}
+              {suggestionChips?.map((item) => (
+                <button
+                  key={`suggest-${item}`}
                   type="button"
                   className="rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground hover:bg-muted"
                   onClick={() => setQaDetails(item)}

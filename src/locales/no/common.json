@@ -175,7 +175,12 @@
     "remainingLabel": "Gjenstår {{amount}}",
     "quickAdd": "Hurtiglegg til",
     "useLastMonth": "Bruk forrige måned",
-    "recentCategories": "Siste kategorier"
+    "recentCategories": "Siste kategorier",
+    "categoryGroceries": "Mat",
+    "categoryTransport": "Transport",
+    "categoryUtilities": "Strøm",
+    "categoryRent": "Husleie",
+    "categoryDining": "Uteliv"
   },
   "settings": {
     "subtitle": "Administrer medlemmer og valuta for husholdet.",
