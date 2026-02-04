@@ -266,7 +266,10 @@ export default function MonthlyBudgetPage() {
                   emptyExpenses: t("budgets.chartsEmpty"),
                   transfers: t("budgets.chartsTransfers"),
                   monthly: t("budgets.chartsMonthly"),
-                  savings: t("budgets.chartsSavings")
+                  savings: t("budgets.chartsSavings"),
+                  insightTopCategory: t("budgets.insightTopCategory"),
+                  insightTransfers: t("budgets.insightTransfers"),
+                  insightSavings: t("budgets.insightSavings")
                 }}
               />
             </div>

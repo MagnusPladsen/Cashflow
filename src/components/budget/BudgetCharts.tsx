@@ -13,6 +13,9 @@ interface BudgetChartsProps {
     transfers: string;
     monthly: string;
     savings: string;
+    insightTopCategory: string;
+    insightTransfers: string;
+    insightSavings: string;
   };
 }
 
@@ -56,8 +59,42 @@ export default function BudgetCharts({
     ];
   }, [expenses, allocations, labels]);
 
+  const insights = useMemo(() => {
+    const totals = expenses.reduce<Record<string, number>>((acc, item) => {
+      if (item.type === "spending_transfer") return acc;
+      acc[item.category] = (acc[item.category] ?? 0) + Number(item.amount ?? 0);
+      return acc;
+    }, {});
+    const top = Object.entries(totals).sort((a, b) => b[1] - a[1])[0];
+    const transferTotal = expenses.reduce(
+      (sum, item) => sum + (item.type === "spending_transfer" ? Number(item.amount ?? 0) : 0),
+      0
+    );
+    const savingsTotal = allocations.reduce(
+      (sum, item) => sum + (item.type === "savings" ? Number(item.amount ?? 0) : 0),
+      0
+    );
+    return { top, transferTotal, savingsTotal };
+  }, [expenses, allocations]);
+
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+        {insights.top ? (
+          <span className="rounded-full border border-border/60 px-3 py-1">
+            {labels.insightTopCategory
+              .replace("{{category}}", insights.top[0])
+              .replace("{{amount}}", String(insights.top[1]))}
+          </span>
+        ) : null}
+        <span className="rounded-full border border-border/60 px-3 py-1">
+          {labels.insightTransfers.replace("{{amount}}", String(insights.transferTotal))}
+        </span>
+        <span className="rounded-full border border-border/60 px-3 py-1">
+          {labels.insightSavings.replace("{{amount}}", String(insights.savingsTotal))}
+        </span>
+      </div>
+      <div className="grid gap-4 lg:grid-cols-2">
       <div className="h-64 rounded-2xl border border-border/60 bg-card p-3">
         {pieData.length ? (
           <ResponsivePie
@@ -129,6 +166,7 @@ export default function BudgetCharts({
             </div>
           )}
         />
+      </div>
       </div>
     </div>
   );
