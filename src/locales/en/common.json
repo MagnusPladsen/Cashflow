@@ -174,6 +174,7 @@
     "budgetedLabel": "Budgeted {{amount}}",
     "remainingLabel": "Remaining {{amount}}",
     "quickAdd": "Quick add",
+    "useLastMonth": "Use last month values",
     "recentCategories": "Recent categories"
   },
   "settings": {
