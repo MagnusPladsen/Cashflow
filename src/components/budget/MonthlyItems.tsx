@@ -318,6 +318,8 @@ export default function MonthlyItems({
         editorConfig={expenseEditorConfig}
         quickAdd
         quickAddLabel={t("budgets.quickAdd")}
+        recentDetailsKey="expense-categories"
+        recentDetailsLabel={t("budgets.recentCategories")}
       >
         {expenses.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("budgets.emptyItems")}</p>

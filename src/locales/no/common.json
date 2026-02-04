@@ -173,7 +173,8 @@
     "chartsSavings": "Sparing",
     "budgetedLabel": "Budsjettert {{amount}}",
     "remainingLabel": "Gjenstår {{amount}}",
-    "quickAdd": "Hurtiglegg til"
+    "quickAdd": "Hurtiglegg til",
+    "recentCategories": "Siste kategorier"
   },
   "settings": {
     "subtitle": "Administrer medlemmer og valuta for husholdet.",

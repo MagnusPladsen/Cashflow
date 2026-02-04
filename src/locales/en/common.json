@@ -173,7 +173,8 @@
     "chartsSavings": "Savings",
     "budgetedLabel": "Budgeted {{amount}}",
     "remainingLabel": "Remaining {{amount}}",
-    "quickAdd": "Quick add"
+    "quickAdd": "Quick add",
+    "recentCategories": "Recent categories"
   },
   "settings": {
     "subtitle": "Manage household members and currency settings.",
