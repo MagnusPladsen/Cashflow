@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import { parseAmount } from "@/lib/amount";
 
 interface CardListSectionProps {
   title: string;
@@ -61,10 +62,9 @@ export default function CardListSection({
 
   const handleQuickAdd = () => {
     if (!onCreate || !qaName.trim()) return;
-    const parsedAmount = Number(qaAmount.replace(/[^0-9.-]/g, ""));
     onCreate({
       name: qaName.trim(),
-      amount: Number.isFinite(parsedAmount) ? parsedAmount : 0,
+      amount: parseAmount(qaAmount),
       details: qaDetails.trim(),
       type: qaType || undefined,
       account: qaAccount.trim() || undefined
@@ -128,6 +128,12 @@ export default function CardListSection({
                 value={qaName}
                 onChange={(event) => setQaName(event.target.value)}
                 placeholder="Groceries"
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    handleQuickAdd();
+                  }
+                }}
               />
             </div>
             <div className="space-y-2">
@@ -137,6 +143,12 @@ export default function CardListSection({
                 value={qaAmount}
                 onChange={(event) => setQaAmount(event.target.value)}
                 placeholder="4000"
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    handleQuickAdd();
+                  }
+                }}
               />
             </div>
             <div className="space-y-2">
@@ -148,6 +160,12 @@ export default function CardListSection({
                 value={qaDetails}
                 onChange={(event) => setQaDetails(event.target.value)}
                 placeholder={editorConfig?.detailsPlaceholder ?? ""}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    handleQuickAdd();
+                  }
+                }}
               />
             </div>
           </div>
@@ -175,6 +193,12 @@ export default function CardListSection({
                     value={qaAccount}
                     onChange={(event) => setQaAccount(event.target.value)}
                     placeholder={editorConfig.accountPlaceholder ?? ""}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        handleQuickAdd();
+                      }
+                    }}
                   />
                 </div>
               ) : null}

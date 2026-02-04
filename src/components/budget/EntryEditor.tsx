@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import { parseAmount } from "@/lib/amount";
 
 export interface EntryEditorConfig {
   detailsLabel?: string;
@@ -95,11 +96,10 @@ export default function EntryEditor({
   }, [open, initialValues, config?.typeOptions]);
 
   const handleSave = () => {
-    const parsedAmount = Number(amount.replace(/[^0-9.-]/g, ""));
     if (!name.trim()) return;
     onSave?.({
       name: name.trim(),
-      amount: Number.isFinite(parsedAmount) ? parsedAmount : 0,
+      amount: parseAmount(amount),
       details: details.trim(),
       type: entryType || undefined,
       account: account.trim() || undefined
