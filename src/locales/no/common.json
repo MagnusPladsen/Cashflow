@@ -170,7 +170,10 @@
     "chartsEmpty": "Ingen utgiftsdata ennå",
     "chartsTransfers": "Overføringer",
     "chartsMonthly": "Månedsbudsjett",
-    "chartsSavings": "Sparing"
+    "chartsSavings": "Sparing",
+    "budgetedLabel": "Budsjettert {{amount}}",
+    "remainingLabel": "Gjenstår {{amount}}",
+    "quickAdd": "Hurtiglegg til"
   },
   "settings": {
     "subtitle": "Administrer medlemmer og valuta for husholdet.",

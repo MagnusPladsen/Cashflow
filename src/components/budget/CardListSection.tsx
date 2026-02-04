@@ -5,6 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
 import type { EntryEditorConfig } from "./EntryEditor";
 import EntryEditor from "./EntryEditor";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 
 interface CardListSectionProps {
   title: string;
@@ -22,6 +31,8 @@ interface CardListSectionProps {
   tip?: string;
   tooltip?: string;
   editorConfig?: EntryEditorConfig;
+  quickAdd?: boolean;
+  quickAddLabel?: string;
 }
 
 export default function CardListSection({
@@ -33,12 +44,35 @@ export default function CardListSection({
   description,
   tip,
   tooltip,
-  editorConfig
+  editorConfig,
+  quickAdd,
+  quickAddLabel
 }: CardListSectionProps) {
   const [openEditor, setOpenEditor] = useState(false);
+  const [qaName, setQaName] = useState("");
+  const [qaAmount, setQaAmount] = useState("");
+  const [qaDetails, setQaDetails] = useState("");
+  const [qaType, setQaType] = useState(editorConfig?.typeOptions?.[0]?.value ?? "");
+  const [qaAccount, setQaAccount] = useState("");
 
   const handleSave = (values: { name: string; amount: number; details: string }) => {
     onCreate?.(values);
+  };
+
+  const handleQuickAdd = () => {
+    if (!onCreate || !qaName.trim()) return;
+    const parsedAmount = Number(qaAmount.replace(/[^0-9.-]/g, ""));
+    onCreate({
+      name: qaName.trim(),
+      amount: Number.isFinite(parsedAmount) ? parsedAmount : 0,
+      details: qaDetails.trim(),
+      type: qaType || undefined,
+      account: qaAccount.trim() || undefined
+    });
+    setQaName("");
+    setQaAmount("");
+    setQaDetails("");
+    setQaAccount("");
   };
 
   return (
@@ -71,6 +105,83 @@ export default function CardListSection({
           </Button>
         ) : null}
       </div>
+      {quickAdd && onCreate ? (
+        <div className="rounded-2xl border border-border/60 bg-card/60 p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <p className="text-sm font-medium">
+              {quickAddLabel ?? "Quick add"}
+            </p>
+            <Button
+              size="sm"
+              className="rounded-full"
+              onClick={handleQuickAdd}
+              disabled={disabled || !qaName.trim()}
+            >
+              Add
+            </Button>
+          </div>
+          <div className="grid gap-3 md:grid-cols-[1.4fr_0.8fr_1fr]">
+            <div className="space-y-2">
+              <Label htmlFor={`${title}-qa-name`}>Name</Label>
+              <Input
+                id={`${title}-qa-name`}
+                value={qaName}
+                onChange={(event) => setQaName(event.target.value)}
+                placeholder="Groceries"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor={`${title}-qa-amount`}>Amount</Label>
+              <Input
+                id={`${title}-qa-amount`}
+                value={qaAmount}
+                onChange={(event) => setQaAmount(event.target.value)}
+                placeholder="4000"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor={`${title}-qa-details`}>
+                {editorConfig?.detailsLabel ?? "Details"}
+              </Label>
+              <Input
+                id={`${title}-qa-details`}
+                value={qaDetails}
+                onChange={(event) => setQaDetails(event.target.value)}
+                placeholder={editorConfig?.detailsPlaceholder ?? ""}
+              />
+            </div>
+          </div>
+          {editorConfig?.typeOptions ? (
+            <div className="mt-3 grid gap-3 md:grid-cols-[1fr_1fr]">
+              <div className="space-y-2">
+                <Label>{editorConfig.typeLabel ?? "Type"}</Label>
+                <Select value={qaType} onValueChange={setQaType}>
+                  <SelectTrigger className="w-full rounded-full">
+                    <SelectValue placeholder={editorConfig.typeLabel ?? "Type"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {editorConfig.typeOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {editorConfig.showAccountWhenType && qaType === editorConfig.showAccountWhenType ? (
+                <div className="space-y-2">
+                  <Label>{editorConfig.accountLabel ?? "Account"}</Label>
+                  <Input
+                    value={qaAccount}
+                    onChange={(event) => setQaAccount(event.target.value)}
+                    placeholder={editorConfig.accountPlaceholder ?? ""}
+                  />
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
       <div className="space-y-3">{children}</div>
       {tip ? (
         <p className="text-xs text-muted-foreground">{tip}</p>

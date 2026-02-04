@@ -16,6 +16,9 @@ interface EntryCardProps {
   badge?: string;
   diff?: { value: string; tone: "over" | "under" };
   progress?: { value: number; tone: "over" | "under" };
+  budgeted?: string;
+  remaining?: string;
+  remainingTone?: "good" | "warn";
   editorConfig?: EntryEditorConfig;
   initialValues?: {
     name?: string;
@@ -41,6 +44,9 @@ export default function EntryCard({
   badge,
   diff,
   progress,
+  budgeted,
+  remaining,
+  remainingTone,
   editorConfig,
   initialValues,
   onSave,
@@ -91,6 +97,20 @@ export default function EntryCard({
                     style={{ width: `${Math.min(Math.max(progress.value, 0), 100)}%` }}
                   />
                 </div>
+              </div>
+            ) : null}
+            {budgeted || remaining ? (
+              <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                {budgeted ? <span>{budgeted}</span> : null}
+                {remaining ? (
+                  <span
+                    className={
+                      remainingTone === "warn" ? "text-orange-600" : "text-emerald-600"
+                    }
+                  >
+                    {remaining}
+                  </span>
+                ) : null}
               </div>
             ) : null}
           </div>

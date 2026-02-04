@@ -76,6 +76,18 @@ export default function ExpenseGroup({
                       tone: diff !== undefined && diff > 0 ? "over" : "under"
                     }
                   : undefined;
+              const budgeted =
+                baseline !== undefined
+                  ? t("budgets.budgetedLabel", {
+                      amount: formatCurrency(baseline, currency, i18n.language)
+                    })
+                  : undefined;
+              const remaining =
+                baseline !== undefined
+                  ? t("budgets.remainingLabel", {
+                      amount: formatCurrency(baseline - item.amount, currency, i18n.language)
+                    })
+                  : undefined;
 
               return (
                 <EntryCard
@@ -91,6 +103,9 @@ export default function ExpenseGroup({
                   }
                   diff={diffBadge}
                   progress={progress}
+                  budgeted={budgeted}
+                  remaining={remaining}
+                  remainingTone={baseline !== undefined && item.amount > baseline ? "warn" : "good"}
                   onSave={onSave ? (values) => onSave(item.id, values) : undefined}
                   onDelete={onDelete ? () => onDelete(item.id) : undefined}
                   initialValues={{
