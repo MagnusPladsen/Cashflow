@@ -16,6 +16,7 @@ import { supabaseQueryKeys } from "@/lib/supabase/queries";
 import TemplatePicker from "@/components/budget/TemplatePicker";
 import MonthPicker from "@/components/budget/MonthPicker";
 import { duplicateMonthlyBudgetAction } from "@/app/actions/budgets";
+import NoHouseholdNotice from "@/components/layout/NoHouseholdNotice";
 
 export default function BudgetsPage() {
   const { t, i18n } = useTranslation();
@@ -100,6 +101,10 @@ export default function BudgetsPage() {
       toast.error(t("budgets.duplicateError"));
     }
   };
+
+  if (!householdId && !isLoading) {
+    return <NoHouseholdNotice />;
+  }
 
   return (
     <div className="space-y-8">

@@ -183,6 +183,9 @@
   "household": {
     "setupTitle": "Set up your household",
     "setupSubtitle": "Add your household name and default currency to get started.",
+    "noticeTitle": "Set up your household first",
+    "noticeBody": "Create your household on the dashboard to unlock budgets, templates, and settings.",
+    "noticeCta": "Go to dashboard",
     "name": "Household name",
     "namePlaceholder": "Cashflow Family",
     "create": "Create household",

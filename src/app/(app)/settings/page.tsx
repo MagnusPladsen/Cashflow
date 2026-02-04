@@ -13,12 +13,17 @@ import {
 import { useHouseholdQuery } from "@/lib/supabase/queries";
 import InviteMember from "@/components/layout/InviteMember";
 import MemberList from "@/components/layout/MemberList";
+import NoHouseholdNotice from "@/components/layout/NoHouseholdNotice";
 
 export default function SettingsPage() {
   const { t } = useTranslation();
   const { data, isLoading } = useHouseholdQuery();
   const householdId = data?.householdId;
   const isOwner = data?.role === "owner";
+
+  if (!householdId && !isLoading) {
+    return <NoHouseholdNotice />;
+  }
 
   return (
     <div className="space-y-8">
