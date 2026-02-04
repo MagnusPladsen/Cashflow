@@ -175,7 +175,12 @@
     "remainingLabel": "Remaining {{amount}}",
     "quickAdd": "Quick add",
     "useLastMonth": "Use last month values",
-    "recentCategories": "Recent categories"
+    "recentCategories": "Recent categories",
+    "categoryGroceries": "Groceries",
+    "categoryTransport": "Transport",
+    "categoryUtilities": "Utilities",
+    "categoryRent": "Rent",
+    "categoryDining": "Dining"
   },
   "settings": {
     "subtitle": "Manage household members and currency settings.",
