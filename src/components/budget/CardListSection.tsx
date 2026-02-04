@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
 import type { EntryEditorConfig } from "./EntryEditor";
@@ -34,6 +34,8 @@ interface CardListSectionProps {
   editorConfig?: EntryEditorConfig;
   quickAdd?: boolean;
   quickAddLabel?: string;
+  recentDetailsKey?: string;
+  recentDetailsLabel?: string;
 }
 
 export default function CardListSection({
@@ -47,7 +49,9 @@ export default function CardListSection({
   tooltip,
   editorConfig,
   quickAdd,
-  quickAddLabel
+  quickAddLabel,
+  recentDetailsKey,
+  recentDetailsLabel
 }: CardListSectionProps) {
   const [openEditor, setOpenEditor] = useState(false);
   const [qaName, setQaName] = useState("");
@@ -55,6 +59,35 @@ export default function CardListSection({
   const [qaDetails, setQaDetails] = useState("");
   const [qaType, setQaType] = useState(editorConfig?.typeOptions?.[0]?.value ?? "");
   const [qaAccount, setQaAccount] = useState("");
+  const nameRef = useRef<HTMLInputElement | null>(null);
+  const amountRef = useRef<HTMLInputElement | null>(null);
+  const detailsRef = useRef<HTMLInputElement | null>(null);
+
+  const recentDetails = useMemo(() => {
+    if (!recentDetailsKey || typeof window === "undefined") return [];
+    try {
+      const raw = window.localStorage.getItem(`cashflow.recent.${recentDetailsKey}`);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw) as string[];
+      return Array.isArray(parsed) ? parsed.slice(0, 6) : [];
+    } catch {
+      return [];
+    }
+  }, [recentDetailsKey, qaDetails]);
+
+  const persistRecentDetail = (value: string) => {
+    if (!recentDetailsKey || typeof window === "undefined") return;
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    try {
+      const raw = window.localStorage.getItem(`cashflow.recent.${recentDetailsKey}`);
+      const parsed = raw ? (JSON.parse(raw) as string[]) : [];
+      const next = [trimmed, ...parsed.filter((item) => item !== trimmed)].slice(0, 6);
+      window.localStorage.setItem(`cashflow.recent.${recentDetailsKey}`, JSON.stringify(next));
+    } catch {
+      // ignore localStorage issues
+    }
+  };
 
   const handleSave = (values: { name: string; amount: number; details: string }) => {
     onCreate?.(values);
@@ -69,6 +102,7 @@ export default function CardListSection({
       type: qaType || undefined,
       account: qaAccount.trim() || undefined
     });
+    persistRecentDetail(qaDetails);
     setQaName("");
     setQaAmount("");
     setQaDetails("");
@@ -125,13 +159,14 @@ export default function CardListSection({
               <Label htmlFor={`${title}-qa-name`}>Name</Label>
               <Input
                 id={`${title}-qa-name`}
+                ref={nameRef}
                 value={qaName}
                 onChange={(event) => setQaName(event.target.value)}
                 placeholder="Groceries"
                 onKeyDown={(event) => {
                   if (event.key === "Enter") {
                     event.preventDefault();
-                    handleQuickAdd();
+                    amountRef.current?.focus();
                   }
                 }}
               />
@@ -140,13 +175,14 @@ export default function CardListSection({
               <Label htmlFor={`${title}-qa-amount`}>Amount</Label>
               <Input
                 id={`${title}-qa-amount`}
+                ref={amountRef}
                 value={qaAmount}
                 onChange={(event) => setQaAmount(event.target.value)}
                 placeholder="4000"
                 onKeyDown={(event) => {
                   if (event.key === "Enter") {
                     event.preventDefault();
-                    handleQuickAdd();
+                    detailsRef.current?.focus();
                   }
                 }}
               />
@@ -157,6 +193,7 @@ export default function CardListSection({
               </Label>
               <Input
                 id={`${title}-qa-details`}
+                ref={detailsRef}
                 value={qaDetails}
                 onChange={(event) => setQaDetails(event.target.value)}
                 placeholder={editorConfig?.detailsPlaceholder ?? ""}
@@ -169,6 +206,23 @@ export default function CardListSection({
               />
             </div>
           </div>
+          {recentDetails.length ? (
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <span className="text-xs text-muted-foreground">
+                {recentDetailsLabel ?? "Recent"}
+              </span>
+              {recentDetails.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  className="rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground hover:bg-muted"
+                  onClick={() => setQaDetails(item)}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          ) : null}
           {editorConfig?.typeOptions ? (
             <div className="mt-3 grid gap-3 md:grid-cols-[1fr_1fr]">
               <div className="space-y-2">
