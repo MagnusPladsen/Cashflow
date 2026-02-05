@@ -128,8 +128,10 @@ export default function BudgetsPage() {
     <div className="space-y-8">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold">{t("budgets.title")}</h1>
-          <p className="text-sm text-muted-foreground">{t("budgets.pickMonth")}</p>
+          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+            {t("budgets.pickMonth")}
+          </p>
+          <h1 className="text-3xl font-semibold font-display">{t("budgets.title")}</h1>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2 rounded-full border border-border/60 px-3 py-2 text-xs text-muted-foreground">
@@ -160,7 +162,7 @@ export default function BudgetsPage() {
             ))
           : budgets.length === 0
               ? (
-                <Card className="border border-dashed border-border/70">
+                <Card className="border border-dashed border-border/70 bg-card/60">
                   <CardContent className="flex h-full flex-col items-center justify-center gap-3 p-10 text-center">
                     <p className="text-sm text-muted-foreground">
                       {t("budgets.emptyState")}
@@ -187,10 +189,10 @@ export default function BudgetsPage() {
                 </Card>
               )
             : budgets.map((month) => (
-              <Card key={month.id} className="border border-border/60">
+              <Card key={month.id} className="border border-border/60 bg-card/70">
                 <CardContent className="flex flex-col gap-4 p-6">
                   <div>
-                    <h2 className="text-lg font-semibold">
+                    <h2 className="text-lg font-semibold font-display">
                       {formatMonthLabel(month.year, month.month, i18n.language)}
                     </h2>
                     <p className="text-sm text-muted-foreground">

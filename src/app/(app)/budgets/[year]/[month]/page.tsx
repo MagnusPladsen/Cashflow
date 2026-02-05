@@ -138,7 +138,12 @@ export default function MonthlyBudgetPage() {
         ) : (
           <>
             <div>
-              <h1 className="text-3xl font-semibold">
+              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                {t("budgets.basedOnTemplate", {
+                  name: t("templates.familyCoreTitle")
+                })}
+              </p>
+              <h1 className="text-3xl font-semibold font-display">
                 {t("budgets.monthTitle", {
                   month: new Date(year, month - 1, 1).toLocaleString(
                     i18n.language === "no" ? "nb-NO" : "en-US",
@@ -147,11 +152,6 @@ export default function MonthlyBudgetPage() {
                   year
                 })}
               </h1>
-              <p className="text-sm text-muted-foreground">
-                {t("budgets.basedOnTemplate", {
-                  name: t("templates.familyCoreTitle")
-                })}
-              </p>
             </div>
           </>
         )}
@@ -255,13 +255,14 @@ export default function MonthlyBudgetPage() {
           {!isLoading && data ? (
             <div className="space-y-3">
               <div>
-                <h2 className="text-lg font-semibold">{t("budgets.chartsTitle")}</h2>
+                <h2 className="text-lg font-semibold font-display">{t("budgets.chartsTitle")}</h2>
                 <p className="text-sm text-muted-foreground">{t("budgets.chartsSubtitle")}</p>
               </div>
               <BudgetCharts
                 expenses={data.budget?.monthly_expenses ?? []}
                 allocations={data.budget?.monthly_allocations ?? []}
                 currency={householdCurrency}
+                locale={i18n.language}
                 labels={{
                   emptyExpenses: t("budgets.chartsEmpty"),
                   transfers: t("budgets.chartsTransfers"),
@@ -342,7 +343,7 @@ export default function MonthlyBudgetPage() {
                   }
                 ]}
               />
-              <div className="rounded-2xl border border-border/60 bg-card p-4">
+              <div className="rounded-2xl border border-border/60 bg-card/70 p-4 shadow-[0_18px_40px_-35px_rgba(0,0,0,0.8)]">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">
                     {t("budgets.spendingTransfers")}

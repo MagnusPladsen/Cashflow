@@ -47,29 +47,51 @@ export default function DashboardPage() {
     incomeTotal > 0 ? Math.round(((expensesTotal + allocationsTotal) / incomeTotal) * 100) : 0;
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h1 className="text-3xl font-semibold">{t("dashboard.title")}</h1>
-          <p className="text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Button asChild className="rounded-full">
-            <Link
-              href={
-                budget
-                  ? `/budgets/${year}/${String(month).padStart(2, "0")}`
-                  : "/budgets"
-              }
-            >
-              {budget ? t("dashboard.openBudget") : t("dashboard.openBudgets")}
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="rounded-full">
-            <Link href="/templates">{t("dashboard.createTemplate")}</Link>
-          </Button>
-        </div>
-      </div>
+    <div className="space-y-10">
+      <Card className="border border-border/60 bg-card/70">
+        <CardContent className="space-y-6 p-6 lg:p-8">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                {t("dashboard.subtitle")}
+              </p>
+              <h1 className="text-3xl font-semibold font-display">
+                {t("dashboard.title")}
+              </h1>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button asChild className="rounded-full">
+                <Link
+                  href={
+                    budget
+                      ? `/budgets/${year}/${String(month).padStart(2, "0")}`
+                      : "/budgets"
+                  }
+                >
+                  {budget ? t("dashboard.openBudget") : t("dashboard.openBudgets")}
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="rounded-full">
+                <Link href="/templates">{t("dashboard.createTemplate")}</Link>
+              </Button>
+            </div>
+          </div>
+          {budget ? (
+            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+              <span className="rounded-full border border-border/60 bg-card/70 px-3 py-1">
+                {t("dashboard.currentMonth")}:{" "}
+                <span className="text-foreground font-medium">
+                  {formatCurrency(remainingTotal, currency, i18n.language)}
+                </span>
+              </span>
+              <span className="rounded-full border border-border/60 bg-card/70 px-3 py-1">
+                {t("dashboard.incomeVsExpenses")}:{" "}
+                <span className="text-foreground font-medium">{spentPercent}%</span>
+              </span>
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
 
       {!data && !isLoading ? <HouseholdSetup /> : null}
 
@@ -128,9 +150,9 @@ export default function DashboardPage() {
       )}
 
       <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <Card className="border border-border/60">
+        <Card className="border border-border/60 bg-card/70">
           <CardContent className="space-y-4 p-6">
-            <h2 className="text-lg font-semibold">{t("dashboard.focusTitle")}</h2>
+            <h2 className="text-lg font-semibold font-display">{t("dashboard.focusTitle")}</h2>
             {isLoading ? (
               <div className="space-y-2">
                 <Skeleton className="h-4 w-5/6" />
@@ -163,9 +185,9 @@ export default function DashboardPage() {
             )}
           </CardContent>
         </Card>
-        <Card className="border border-border/60">
+        <Card className="border border-border/60 bg-card/70">
           <CardContent className="space-y-4 p-6">
-            <h2 className="text-lg font-semibold">{t("dashboard.quickLinks")}</h2>
+            <h2 className="text-lg font-semibold font-display">{t("dashboard.quickLinks")}</h2>
             <div className="space-y-3">
               <Button asChild className="w-full rounded-full">
                 <Link href="/budgets">{t("dashboard.openBudgets")}</Link>

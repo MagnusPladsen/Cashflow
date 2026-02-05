@@ -3,11 +3,13 @@
 import { ResponsiveBar } from "@nivo/bar";
 import { ResponsivePie } from "@nivo/pie";
 import { useMemo } from "react";
+import { formatCurrency } from "@/lib/format";
 
 interface BudgetChartsProps {
   expenses: Array<{ category: string; amount: number; type?: "expense" | "spending_transfer" }>;
   allocations: Array<{ amount: number; type: "savings" | "monthly_budget" }>;
   currency: string;
+  locale?: string;
   labels: {
     emptyExpenses: string;
     transfers: string;
@@ -23,6 +25,7 @@ export default function BudgetCharts({
   expenses,
   allocations,
   currency,
+  locale,
   labels
 }: BudgetChartsProps) {
   const pieData = useMemo(() => {
@@ -77,25 +80,47 @@ export default function BudgetCharts({
     return { top, transferTotal, savingsTotal };
   }, [expenses, allocations]);
 
+  const format = (value: number) => formatCurrency(value, currency, locale);
+  const chartTheme = {
+    text: {
+      fill: "var(--muted-foreground)",
+      fontFamily: "var(--font-manrope)"
+    },
+    tooltip: {
+      container: {
+        background: "var(--card)",
+        color: "var(--foreground)",
+        borderRadius: "12px",
+        border: "1px solid var(--border)",
+        boxShadow: "0 18px 40px -28px rgba(0,0,0,0.85)"
+      }
+    },
+    legends: {
+      text: {
+        fill: "var(--muted-foreground)"
+      }
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
         {insights.top ? (
-          <span className="rounded-full border border-border/60 px-3 py-1">
+          <span className="rounded-full border border-border/60 bg-card/70 px-3 py-1">
             {labels.insightTopCategory
               .replace("{{category}}", insights.top[0])
-              .replace("{{amount}}", String(insights.top[1]))}
+              .replace("{{amount}}", format(insights.top[1]))}
           </span>
         ) : null}
-        <span className="rounded-full border border-border/60 px-3 py-1">
-          {labels.insightTransfers.replace("{{amount}}", String(insights.transferTotal))}
+        <span className="rounded-full border border-border/60 bg-card/70 px-3 py-1">
+          {labels.insightTransfers.replace("{{amount}}", format(insights.transferTotal))}
         </span>
-        <span className="rounded-full border border-border/60 px-3 py-1">
-          {labels.insightSavings.replace("{{amount}}", String(insights.savingsTotal))}
+        <span className="rounded-full border border-border/60 bg-card/70 px-3 py-1">
+          {labels.insightSavings.replace("{{amount}}", format(insights.savingsTotal))}
         </span>
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
-      <div className="h-64 rounded-2xl border border-border/60 bg-card p-3">
+      <div className="h-64 rounded-2xl border border-border/60 bg-card/70 p-3 shadow-[0_18px_40px_-35px_rgba(0,0,0,0.8)]">
         {pieData.length ? (
           <ResponsivePie
             data={pieData}
@@ -103,7 +128,8 @@ export default function BudgetCharts({
             innerRadius={0.6}
             padAngle={0.7}
             cornerRadius={6}
-            colors={{ scheme: "set3" }}
+            colors={["#f2c879", "#4fb1b9", "#c39d6b", "#8d94a1", "#7aa27b"]}
+            theme={chartTheme}
             enableArcLabels={false}
             enableArcLinkLabels={false}
             legends={[
@@ -113,14 +139,14 @@ export default function BudgetCharts({
                 translateY: 32,
                 itemWidth: 80,
                 itemHeight: 14,
-                itemTextColor: "#6b7280",
+                itemTextColor: "var(--muted-foreground)",
                 symbolSize: 10,
                 symbolShape: "circle"
               }
             ]}
             tooltip={({ datum }) => (
-              <div className="rounded-md border border-border/60 bg-background px-2 py-1 text-xs shadow">
-                {datum.id}: {datum.formattedValue} {currency}
+              <div className="rounded-xl border border-border/60 bg-card/95 px-2 py-1 text-xs shadow-[0_12px_30px_-20px_rgba(0,0,0,0.85)]">
+                {datum.id}: {format(Number(datum.value))}
               </div>
             )}
           />
@@ -130,14 +156,15 @@ export default function BudgetCharts({
           </div>
         )}
       </div>
-      <div className="h-64 rounded-2xl border border-border/60 bg-card p-3">
+      <div className="h-64 rounded-2xl border border-border/60 bg-card/70 p-3 shadow-[0_18px_40px_-35px_rgba(0,0,0,0.8)]">
         <ResponsiveBar
           data={barData}
           keys={[labels.transfers, labels.monthly, labels.savings]}
           indexBy="bucket"
           margin={{ top: 10, right: 10, bottom: 40, left: 50 }}
           padding={0.6}
-          colors={{ scheme: "pastel1" }}
+          colors={["#4fb1b9", "#8d94a1", "#f2c879"]}
+          theme={chartTheme}
           enableLabel={false}
           axisBottom={{
             tickSize: 0,
@@ -155,14 +182,14 @@ export default function BudgetCharts({
               translateY: 32,
               itemWidth: 90,
               itemHeight: 14,
-              itemTextColor: "#6b7280",
+              itemTextColor: "var(--muted-foreground)",
               symbolSize: 10,
               symbolShape: "circle"
             }
           ]}
           tooltip={({ id, value }) => (
-            <div className="rounded-md border border-border/60 bg-background px-2 py-1 text-xs shadow">
-              {String(id)}: {value} {currency}
+            <div className="rounded-xl border border-border/60 bg-card/95 px-2 py-1 text-xs shadow-[0_12px_30px_-20px_rgba(0,0,0,0.85)]">
+              {String(id)}: {format(Number(value))}
             </div>
           )}
         />

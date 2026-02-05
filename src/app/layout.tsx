@@ -1,17 +1,23 @@
 import type { Metadata } from "next";
-import { DM_Mono, Sora } from "next/font/google";
+import { JetBrains_Mono, Manrope, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 
-const sora = Sora({
-  variable: "--font-sora",
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
   subsets: ["latin"],
   display: "swap"
 });
 
-const dmMono = DM_Mono({
-  variable: "--font-dm-mono",
-  weight: ["300", "400", "500"],
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+  display: "swap"
+});
+
+const jetbrains = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  weight: ["400", "500", "600"],
   subsets: ["latin"],
   display: "swap"
 });
@@ -27,8 +33,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${sora.variable} ${dmMono.variable} antialiased`}> 
+    <html lang="en" suppressHydrationWarning className="dark">
+      <body className={`${playfair.variable} ${manrope.variable} ${jetbrains.variable} antialiased`}> 
         <Providers>{children}</Providers>
       </body>
     </html>

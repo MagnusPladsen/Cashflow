@@ -233,7 +233,11 @@
   },
   "profile": {
     "subtitle": "Dine preferanser og profil.",
-    "manageAccount": "Administrer konto"
+    "manageAccount": "Administrer konto",
+    "preferencesTitle": "Preferanser",
+    "preferencesDescription": "Hold språk og kontokontroller samlet på ett sted.",
+    "changeLanguage": "Endre språk",
+    "updatePassword": "Oppdater passord"
   },
   "common": {
     "name": "Navn",

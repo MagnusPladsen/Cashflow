@@ -233,7 +233,11 @@
   },
   "profile": {
     "subtitle": "Your preferences and profile.",
-    "manageAccount": "Manage account"
+    "manageAccount": "Manage account",
+    "preferencesTitle": "Preferences",
+    "preferencesDescription": "Keep your language and account controls in one place.",
+    "changeLanguage": "Change language",
+    "updatePassword": "Update password"
   },
   "common": {
     "name": "Name",

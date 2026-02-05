@@ -46,10 +46,10 @@ export default function TemplatesPage() {
     <div className="space-y-8">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold">{t("templates.title")}</h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
             {t("templates.subtitle")}
           </p>
+          <h1 className="text-3xl font-semibold font-display">{t("templates.title")}</h1>
         </div>
         <Button
           className="rounded-full"
@@ -67,7 +67,7 @@ export default function TemplatesPage() {
             ))
           : templates.length === 0
             ? (
-                <Card className="border border-dashed border-border/70">
+                <Card className="border border-dashed border-border/70 bg-card/60">
                   <CardContent className="flex h-full flex-col items-center justify-center gap-3 p-10 text-center">
                     <p className="text-sm text-muted-foreground">
                       {t("templates.emptyState")}
@@ -83,10 +83,10 @@ export default function TemplatesPage() {
                 </Card>
               )
             : templates.map((template) => (
-              <Card key={template.id} className="border border-border/60">
+              <Card key={template.id} className="border border-border/60 bg-card/70">
                 <CardContent className="flex h-full flex-col gap-6 p-6">
                   <div>
-                    <h2 className="text-lg font-semibold">{template.name}</h2>
+                    <h2 className="text-lg font-semibold font-display">{template.name}</h2>
                     <p className="text-sm text-muted-foreground">
                       {t("templates.updated", {
                         time: new Date(template.created_at).toLocaleDateString(

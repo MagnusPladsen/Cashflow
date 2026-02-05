@@ -22,9 +22,9 @@ export default function SummaryCards({
         .join(" ")}
     >
       {items.map((item) => (
-        <Card key={item.label} className="border border-border/60">
+        <Card key={item.label} className="border border-border/60 bg-card/70">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">
+            <CardTitle className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
               {item.label}
             </CardTitle>
           </CardHeader>
@@ -32,10 +32,10 @@ export default function SummaryCards({
             <p
               className={
                 item.tone === "good"
-                  ? "text-2xl font-semibold text-emerald-600"
+                  ? "text-2xl font-semibold text-primary font-display"
                   : item.tone === "warn"
-                    ? "text-2xl font-semibold text-orange-600"
-                    : "text-2xl font-semibold"
+                    ? "text-2xl font-semibold text-destructive font-display"
+                    : "text-2xl font-semibold font-display"
               }
             >
               {item.value}
