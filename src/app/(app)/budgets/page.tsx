@@ -8,7 +8,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBudgetsQuery } from "@/lib/supabase/queries";
 import { useCreateMonthlyBudget } from "@/lib/supabase/mutations";
-import HouseholdSetup from "@/components/layout/HouseholdSetup";
 import { formatMonthLabel } from "@/lib/format";
 import { toast } from "sonner";
 import { copyTemplateToMonthlyAction } from "@/app/actions/copy-template";
@@ -17,6 +16,9 @@ import { supabaseQueryKeys } from "@/lib/supabase/queries";
 import TemplatePicker from "@/components/budget/TemplatePicker";
 import MonthPicker from "@/components/budget/MonthPicker";
 import { duplicateMonthlyBudgetAction } from "@/app/actions/budgets";
+import NoHouseholdNotice from "@/components/layout/NoHouseholdNotice";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 export default function BudgetsPage() {
   const { t, i18n } = useTranslation();
@@ -30,17 +32,33 @@ export default function BudgetsPage() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [duplicateOpen, setDuplicateOpen] = useState(false);
   const [duplicateSourceId, setDuplicateSourceId] = useState<string | null>(null);
+  const [useLastMonth, setUseLastMonth] = useState(true);
 
   const handleCreateBudget = async () => {
     if (!householdId) return;
     const now = new Date();
     try {
-      await createBudget.mutateAsync({
-        householdId,
-        templateId: null,
-        year: now.getFullYear(),
-        month: now.getMonth() + 1
-      });
+      if (useLastMonth && budgets.length) {
+        const source = budgets[0];
+        const result = await duplicateMonthlyBudgetAction(
+          source.id,
+          householdId,
+          now.getFullYear(),
+          now.getMonth() + 1
+        );
+        if (!result.ok) {
+          toast.error(t("budgets.createError"));
+          return;
+        }
+      } else {
+        await createBudget.mutateAsync({
+          householdId,
+          templateId: null,
+          year: now.getFullYear(),
+          month: now.getMonth() + 1
+        });
+      }
+      queryClient.invalidateQueries({ queryKey: supabaseQueryKeys.budgets });
       toast.success(t("budgets.created"));
     } catch (error) {
       toast.error(t("budgets.createError"));
@@ -102,23 +120,40 @@ export default function BudgetsPage() {
     }
   };
 
+  if (!householdId && !isLoading) {
+    return <NoHouseholdNotice />;
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold">{t("budgets.title")}</h1>
-          <p className="text-sm text-muted-foreground">{t("budgets.pickMonth")}</p>
+          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+            {t("budgets.pickMonth")}
+          </p>
+          <h1 className="text-3xl font-semibold font-display">{t("budgets.title")}</h1>
         </div>
-        <Button
-          className="rounded-full"
-          onClick={handleCopyFromTemplate}
-          disabled={!householdId || createBudget.isPending || !isOwner}
-        >
-          {t("budgets.copyFromTemplate")}
-        </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 rounded-full border border-border/60 px-3 py-2 text-xs text-muted-foreground">
+            <Label htmlFor="last-month" className="text-xs">
+              {t("budgets.useLastMonth")}
+            </Label>
+            <Switch
+              id="last-month"
+              checked={useLastMonth}
+              onCheckedChange={setUseLastMonth}
+              disabled={!budgets.length}
+            />
+          </div>
+          <Button
+            className="rounded-full"
+            onClick={handleCopyFromTemplate}
+            disabled={!householdId || createBudget.isPending || !isOwner}
+          >
+            {t("budgets.copyFromTemplate")}
+          </Button>
+        </div>
       </div>
-
-      {!householdId && !isLoading ? <HouseholdSetup /> : null}
 
       <div className="grid gap-4 md:grid-cols-2">
         {isLoading
@@ -126,12 +161,23 @@ export default function BudgetsPage() {
               <Skeleton key={index} className="h-44 w-full rounded-2xl" />
             ))
           : budgets.length === 0
-            ? (
-                <Card className="border border-dashed border-border/70">
+              ? (
+                <Card className="border border-dashed border-border/70 bg-card/60">
                   <CardContent className="flex h-full flex-col items-center justify-center gap-3 p-10 text-center">
                     <p className="text-sm text-muted-foreground">
                       {t("budgets.emptyState")}
                     </p>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Label htmlFor="last-month-empty">
+                        {t("budgets.useLastMonth")}
+                      </Label>
+                      <Switch
+                        id="last-month-empty"
+                        checked={useLastMonth}
+                        onCheckedChange={setUseLastMonth}
+                        disabled={!budgets.length}
+                      />
+                    </div>
                     <Button
                       className="rounded-full"
                       onClick={handleCopyFromTemplate}
@@ -143,10 +189,10 @@ export default function BudgetsPage() {
                 </Card>
               )
             : budgets.map((month) => (
-              <Card key={month.id} className="border border-border/60">
+              <Card key={month.id} className="border border-border/60 bg-card/70">
                 <CardContent className="flex flex-col gap-4 p-6">
                   <div>
-                    <h2 className="text-lg font-semibold">
+                    <h2 className="text-lg font-semibold font-display">
                       {formatMonthLabel(month.year, month.month, i18n.language)}
                     </h2>
                     <p className="text-sm text-muted-foreground">

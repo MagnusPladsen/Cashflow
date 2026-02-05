@@ -49,11 +49,11 @@ export default function ActivityFeed({ householdId }: ActivityFeedProps) {
   const { data = [], isLoading } = useActivityLogsQuery(householdId ?? null, filter);
 
   return (
-    <Card className="border border-border/60">
+    <Card className="border border-border/60 bg-card/70">
       <CardContent className="space-y-4 p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="text-lg font-semibold">{t("activity.title")}</h2>
+            <h2 className="text-lg font-semibold font-display">{t("activity.title")}</h2>
             <p className="text-sm text-muted-foreground">{t("activity.subtitle")}</p>
           </div>
           <Select value={filter} onValueChange={setFilter}>
