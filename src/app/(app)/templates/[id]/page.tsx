@@ -108,12 +108,12 @@ export default function TemplateDetailPage() {
         ) : (
           <>
             <div>
-              <h1 className="text-3xl font-semibold">
-                {data?.template?.name ?? t("templates.familyCoreTitle")}
-              </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
                 {t("templates.familyCoreSubtitle")}
               </p>
+              <h1 className="text-3xl font-semibold font-display">
+                {data?.template?.name ?? t("templates.familyCoreTitle")}
+              </h1>
             </div>
             {data?.template && isOwner ? (
               <TemplateHeaderActions

@@ -32,10 +32,10 @@ export default function HouseholdSetup() {
   };
 
   return (
-    <Card className="border border-border/60">
+    <Card className="border border-border/60 bg-card/70">
       <CardContent className="space-y-5 p-6">
         <div>
-          <h2 className="text-xl font-semibold">{t("household.setupTitle")}</h2>
+          <h2 className="text-xl font-semibold font-display">{t("household.setupTitle")}</h2>
           <p className="text-sm text-muted-foreground">{t("household.setupSubtitle")}</p>
         </div>
         <div className="space-y-3">

@@ -67,75 +67,90 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="grid min-h-screen place-items-center px-4">
-      <Card className="w-full max-w-md border border-border/60">
-        <CardContent className="space-y-6 p-8">
-          <div className="space-y-2">
-            <h1 className="text-2xl font-semibold">{t("auth.title")}</h1>
-            <p className="text-sm text-muted-foreground">{t("auth.subtitle")}</p>
+    <div className="min-h-screen px-4 py-10">
+      <div className="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+        <div className="space-y-6">
+          <div className="rounded-3xl border border-border/60 bg-card/70 p-8 shadow-[0_30px_70px_-50px_rgba(0,0,0,0.85)]">
+            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+              Cashflow
+            </p>
+            <h1 className="mt-3 text-4xl font-semibold font-display">
+              {t("auth.title")}
+            </h1>
+            <p className="mt-3 text-sm text-muted-foreground">{t("auth.subtitle")}</p>
           </div>
-
-          <div className="space-y-3">
-            <Button
-              className="w-full rounded-full"
-              onClick={() => handleOAuth("google")}
-              disabled={loading}
-            >
-              {t("auth.google")}
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full rounded-full"
-              onClick={() => handleOAuth("apple")}
-              disabled={loading}
-            >
-              {t("auth.apple")}
-            </Button>
-          </div>
-
-          <div className="space-y-4">
+        </div>
+        <Card className="w-full border border-border/60 bg-card/70">
+          <CardContent className="space-y-6 p-8">
             <div className="space-y-2">
-              <Label htmlFor="email">{t("auth.email")}</Label>
-              <Input
-                id="email"
-                placeholder={t("auth.emailPlaceholder")}
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-              />
+              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                {mode === "signIn" ? t("auth.signIn") : t("auth.signUp")}
+              </p>
+              <p className="text-sm text-muted-foreground">{t("auth.subtitle")}</p>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">{t("auth.password")}</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder={t("auth.passwordPlaceholder")}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-              />
-            </div>
-          </div>
 
-          <div className="space-y-3">
-            <Button
-              className="w-full rounded-full"
-              onClick={handleEmailAuth}
-              disabled={loading || !email || !password}
-            >
-              {mode === "signIn" ? t("auth.signIn") : t("auth.signUp")}
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full rounded-full"
-              onClick={() =>
-                setMode((prev) => (prev === "signIn" ? "signUp" : "signIn"))
-              }
-              disabled={loading}
-            >
-              {mode === "signIn" ? t("auth.createAccount") : t("auth.backToSignIn")}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+            <div className="space-y-3">
+              <Button
+                className="w-full rounded-full"
+                onClick={() => handleOAuth("google")}
+                disabled={loading}
+              >
+                {t("auth.google")}
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full rounded-full"
+                onClick={() => handleOAuth("apple")}
+                disabled={loading}
+              >
+                {t("auth.apple")}
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">{t("auth.email")}</Label>
+                <Input
+                  id="email"
+                  placeholder={t("auth.emailPlaceholder")}
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">{t("auth.password")}</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder={t("auth.passwordPlaceholder")}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Button
+                className="w-full rounded-full"
+                onClick={handleEmailAuth}
+                disabled={loading || !email || !password}
+              >
+                {mode === "signIn" ? t("auth.signIn") : t("auth.signUp")}
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full rounded-full"
+                onClick={() =>
+                  setMode((prev) => (prev === "signIn" ? "signUp" : "signIn"))
+                }
+                disabled={loading}
+              >
+                {mode === "signIn" ? t("auth.createAccount") : t("auth.backToSignIn")}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

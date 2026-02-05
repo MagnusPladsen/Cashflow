@@ -57,7 +57,7 @@ export default function EntryCard({
 
   return (
     <>
-      <Card className="border border-border/60 bg-muted/10 p-4 shadow-sm">
+      <Card className="border border-border/60 bg-card/60 p-4 shadow-[0_18px_40px_-35px_rgba(0,0,0,0.8)] transition-transform duration-200 hover:-translate-y-0.5">
         <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
           <div className="space-y-2">
             <div className="flex items-start justify-between gap-3">
@@ -65,7 +65,7 @@ export default function EntryCard({
                 <p className="text-sm font-semibold leading-tight">{title}</p>
                 {meta ? <p className="text-xs text-muted-foreground">{meta}</p> : null}
               </div>
-              <p className="text-lg font-semibold tabular-nums">{amount}</p>
+              <p className="text-lg font-semibold font-display tabular-nums">{amount}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               {badge ? (
@@ -77,8 +77,8 @@ export default function EntryCard({
                 <Badge
                   className={
                     diff.tone === "under"
-                      ? "rounded-full bg-emerald-100 text-emerald-700"
-                      : "rounded-full bg-orange-100 text-orange-700"
+                      ? "rounded-full bg-primary/15 text-primary"
+                      : "rounded-full bg-destructive/15 text-destructive"
                   }
                 >
                   {diff.value}
@@ -87,12 +87,12 @@ export default function EntryCard({
             </div>
             {progress ? (
               <div className="space-y-1">
-                <div className="h-1.5 w-full rounded-full bg-muted">
+                <div className="h-1.5 w-full rounded-full bg-muted/60">
                   <div
                     className={
                       progress.tone === "under"
-                        ? "h-1.5 rounded-full bg-emerald-500"
-                        : "h-1.5 rounded-full bg-orange-500"
+                        ? "h-1.5 rounded-full bg-gradient-to-r from-primary/70 via-primary to-primary/60"
+                        : "h-1.5 rounded-full bg-gradient-to-r from-destructive/70 via-destructive to-destructive/60"
                     }
                     style={{ width: `${Math.min(Math.max(progress.value, 0), 100)}%` }}
                   />
@@ -105,7 +105,7 @@ export default function EntryCard({
                 {remaining ? (
                   <span
                     className={
-                      remainingTone === "warn" ? "text-orange-600" : "text-emerald-600"
+                      remainingTone === "warn" ? "text-destructive" : "text-primary"
                     }
                   >
                     {remaining}

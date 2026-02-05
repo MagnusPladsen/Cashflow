@@ -116,10 +116,10 @@ export default function CardListSection({
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-semibold">{title}</h2>
+            <h2 className="text-lg font-semibold font-display">{title}</h2>
             {tooltip ? (
               <span
-                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border/60 text-muted-foreground"
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border/60 bg-card/60 text-muted-foreground"
                 title={tooltip}
               >
                 <Info className="h-4 w-4" />
@@ -142,9 +142,9 @@ export default function CardListSection({
         ) : null}
       </div>
       {quickAdd && onCreate ? (
-        <div className="rounded-2xl border border-border/60 bg-card/60 p-4">
+        <div className="rounded-2xl border border-border/60 bg-card/70 p-4 shadow-[0_16px_35px_-30px_rgba(0,0,0,0.85)]">
           <div className="mb-3 flex items-center justify-between">
-            <p className="text-sm font-medium">
+            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
               {quickAddLabel ?? "Quick add"}
             </p>
             <Button
@@ -210,14 +210,14 @@ export default function CardListSection({
           </div>
           {recentDetails.length || suggestionChips?.length ? (
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
                 {recentDetailsLabel ?? "Recent"}
               </span>
               {recentDetails.map((item) => (
                 <button
                   key={`recent-${item}`}
                   type="button"
-                  className="rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground hover:bg-muted"
+                  className="rounded-full border border-border/60 bg-card/70 px-3 py-1 text-xs text-muted-foreground transition hover:bg-muted/60"
                   onClick={() => setQaDetails(item)}
                 >
                   {item}
@@ -227,7 +227,7 @@ export default function CardListSection({
                 <button
                   key={`suggest-${item}`}
                   type="button"
-                  className="rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground hover:bg-muted"
+                  className="rounded-full border border-border/60 bg-card/70 px-3 py-1 text-xs text-muted-foreground transition hover:bg-muted/60"
                   onClick={() => setQaDetails(item)}
                 >
                   {item}

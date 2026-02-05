@@ -9,10 +9,10 @@ export default function NoHouseholdNotice() {
   const { t } = useTranslation();
 
   return (
-    <Card className="border border-border/60">
+    <Card className="border border-border/60 bg-card/70">
       <CardContent className="space-y-4 p-6">
         <div>
-          <h2 className="text-lg font-semibold">{t("household.noticeTitle")}</h2>
+          <h2 className="text-lg font-semibold font-display">{t("household.noticeTitle")}</h2>
           <p className="text-sm text-muted-foreground">
             {t("household.noticeBody")}
           </p>
