@@ -66,7 +66,7 @@ async function fetchTemplateDetail(id: string) {
   const { data, error } = await supabase
     .from("budget_templates")
     .select(
-      "id, name, template_incomes(id, name, amount, frequency, assigned_user_id), template_expenses(id, name, amount, category, frequency), template_allocations(id, name, amount, type, assigned_user_id)"
+      "id, name, template_incomes(id, name, amount, frequency, assigned_user_id), template_expenses(id, name, amount, category, frequency, type, spending_account), template_allocations(id, name, amount, type, assigned_user_id)"
     )
     .eq("id", id)
     .maybeSingle();
@@ -110,7 +110,7 @@ async function fetchMonthlyBudget(year: number, month: number) {
   const { data, error } = await supabase
     .from("monthly_budgets")
     .select(
-      "id, year, month, template_id, monthly_incomes(id, name, amount, frequency, assigned_user_id, template_income_id), monthly_expenses(id, name, amount, category, frequency, template_expense_id), monthly_allocations(id, name, amount, type, assigned_user_id, template_allocation_id)"
+      "id, year, month, template_id, monthly_incomes(id, name, amount, frequency, assigned_user_id, template_income_id), monthly_expenses(id, name, amount, category, frequency, template_expense_id, type, spending_account), monthly_allocations(id, name, amount, type, assigned_user_id, template_allocation_id)"
     )
     .eq("household_id", household.householdId)
     .eq("year", year)
@@ -125,7 +125,7 @@ async function fetchMonthlyBudget(year: number, month: number) {
     const { data: templateData, error: templateError } = await supabase
       .from("budget_templates")
       .select(
-        "id, name, template_incomes(id, name, amount), template_expenses(id, name, amount, category), template_allocations(id, name, amount, type)"
+        "id, name, template_incomes(id, name, amount), template_expenses(id, name, amount, category, type, spending_account), template_allocations(id, name, amount, type)"
       )
       .eq("id", data.template_id)
       .maybeSingle();

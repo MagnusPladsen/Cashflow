@@ -10,13 +10,16 @@
 8. Run `supabase/activity-links.sql` to deep-link activity entries.
 9. Run `supabase/invite-tokens.sql` to enable tokenized invites.
 10. Run `supabase/households-default.sql` to default `created_by` on insert.
-11. Enable Auth providers (Apple, Google, Email) in the Supabase dashboard.
-12. Deploy the `send-invite` edge function and set `RESEND_API_KEY` and `FROM_EMAIL`.
-13. Add environment variables in `.env.local`:
+11. Run `supabase/households-rls-fix.sql` to allow initial owner creation.
+12. Run `supabase/expense-transfers.sql` to support spending account transfers.
+13. Enable Auth providers (Apple, Google, Email) in the Supabase dashboard.
+14. Deploy the `send-invite` edge function and set `RESEND_API_KEY` and `FROM_EMAIL`.
+15. Add environment variables in `.env.local`:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
 ```
 
 Notes:

@@ -45,6 +45,8 @@ export async function copyTemplateToMonthlyBudget(
       amount: expense.amount,
       category: expense.category,
       frequency: expense.frequency,
+      type: expense.type ?? "expense",
+      spending_account: expense.spending_account ?? null,
       template_expense_id: expense.id
     })) ?? [];
 

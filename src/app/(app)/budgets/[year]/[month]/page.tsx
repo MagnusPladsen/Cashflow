@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "next/navigation";
 import BudgetTabs from "@/components/budget/BudgetTabs";
 import SummaryCards from "@/components/budget/SummaryCards";
+import BudgetSummaryBar from "@/components/budget/BudgetSummaryBar";
+import BudgetCharts from "@/components/budget/BudgetCharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMonthlyBudgetQuery } from "@/lib/supabase/queries";
 import { formatCurrency } from "@/lib/format";
@@ -95,6 +97,17 @@ export default function MonthlyBudgetPage() {
       (sum, item) => sum + Number(item.amount ?? 0),
       0
     ) ?? 0;
+  const savingsTotal =
+    data?.budget?.monthly_allocations?.reduce(
+      (sum, item) => sum + (item.type === "savings" ? Number(item.amount ?? 0) : 0),
+      0
+    ) ?? 0;
+  const spendingTransferTotal =
+    data?.budget?.monthly_expenses?.reduce(
+      (sum, item) =>
+        sum + (item.type === "spending_transfer" ? Number(item.amount ?? 0) : 0),
+      0
+    ) ?? 0;
   const unallocatedTotal = incomeTotal - expensesTotal - allocationsTotal;
   const templateIncomeTotal =
     data?.template?.template_incomes?.reduce(
@@ -125,7 +138,12 @@ export default function MonthlyBudgetPage() {
         ) : (
           <>
             <div>
-              <h1 className="text-3xl font-semibold">
+              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                {t("budgets.basedOnTemplate", {
+                  name: t("templates.familyCoreTitle")
+                })}
+              </p>
+              <h1 className="text-3xl font-semibold font-display">
                 {t("budgets.monthTitle", {
                   month: new Date(year, month - 1, 1).toLocaleString(
                     i18n.language === "no" ? "nb-NO" : "en-US",
@@ -134,165 +152,223 @@ export default function MonthlyBudgetPage() {
                   year
                 })}
               </h1>
-              <p className="text-sm text-muted-foreground">
-                {t("budgets.basedOnTemplate", {
-                  name: t("templates.familyCoreTitle")
-                })}
-              </p>
             </div>
           </>
         )}
         <PresenceBar room={`budget-${year}-${month}`} />
       </div>
 
-      {isLoading || !data ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <Skeleton key={index} className="h-28 w-full rounded-2xl" />
-          ))}
-        </div>
-      ) : (
-        <SummaryCards
-          items={[
-            {
-              label: t("templates.income"),
-              value: formatCurrency(incomeTotal, householdCurrency, i18n.language),
-              sub: data?.template
-                ? `${t("budgets.templateValue")}: ${formatCurrency(
-                    templateIncomeTotal,
-                    householdCurrency,
-                    i18n.language
-                  )}`
-                : undefined
-            },
-            {
-              label: t("templates.expenses"),
-              value: formatCurrency(expensesTotal, householdCurrency, i18n.language),
-              sub: data?.template
-                ? `${t("budgets.templateValue")}: ${formatCurrency(
-                    templateExpensesTotal,
-                    householdCurrency,
-                    i18n.language
-                  )}`
-                : undefined
-            },
-            {
-              label: t("templates.allocations"),
-              value: formatCurrency(
-                allocationsTotal,
-                householdCurrency,
-                i18n.language
-              ),
-              sub: data?.template
-                ? `${t("budgets.templateValue")}: ${formatCurrency(
-                    templateAllocationsTotal,
-                    householdCurrency,
-                    i18n.language
-                  )}`
-                : undefined
-            },
-            {
-              label: t("templates.unallocated"),
-              value: formatCurrency(
-                unallocatedTotal,
-                householdCurrency,
-                i18n.language
-              ),
-              tone: unallocatedTotal >= 0 ? "good" : "warn",
-              sub: data?.template
-                ? `${t("budgets.templateValue")}: ${formatCurrency(
-                    templateUnallocatedTotal,
-                    householdCurrency,
-                    i18n.language
-                  )}`
-                : undefined
-            }
-          ]}
-        />
-      )}
-
-      <BudgetTabs
-        defaultValue="expenses"
-        tabs={[
-          {
-            value: "income",
-            label: t("templates.income"),
-            content: isLoading || !data ? (
-              <div className="space-y-3">
-                <Skeleton className="h-16 w-full rounded-2xl" />
-                <Skeleton className="h-16 w-full rounded-2xl" />
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+        <div className="order-2 space-y-6 lg:order-1">
+          {!isLoading && data ? (
+            <BudgetSummaryBar
+              used={expensesTotal + allocationsTotal}
+              total={incomeTotal}
+              currency={householdCurrency}
+              locale={i18n.language}
+              label={t("budgets.summaryLabel")}
+              remainingLabel={t("common.remaining")}
+            />
+          ) : null}
+          <BudgetTabs
+            defaultValue="expenses"
+            tabs={[
+              {
+                value: "income",
+                label: t("templates.income"),
+                content: isLoading || !data ? (
+                  <div className="space-y-3">
+                    <Skeleton className="h-16 w-full rounded-2xl" />
+                    <Skeleton className="h-16 w-full rounded-2xl" />
+                  </div>
+                ) : (
+                  <MonthlyItems
+                    budgetId={data.budget?.id ?? ""}
+                    currency={householdCurrency}
+                    mode="income"
+                    canEdit={isOwner}
+                    incomes={data.budget?.monthly_incomes ?? []}
+                    expenses={[]}
+                    allocations={[]}
+                    templateIncomes={data.template?.template_incomes ?? []}
+                    templateExpenses={[]}
+                    templateAllocations={[]}
+                    year={year}
+                    month={month}
+                  />
+                )
+              },
+              {
+                value: "expenses",
+                label: t("templates.expenses"),
+                content: isLoading || !data ? (
+                  <div className="space-y-3">
+                    <Skeleton className="h-16 w-full rounded-2xl" />
+                    <Skeleton className="h-16 w-full rounded-2xl" />
+                    <Skeleton className="h-16 w-full rounded-2xl" />
+                  </div>
+                ) : (
+                  <MonthlyItems
+                    budgetId={data.budget?.id ?? ""}
+                    currency={householdCurrency}
+                    mode="expenses"
+                    canEdit={isOwner}
+                    incomes={[]}
+                    expenses={data.budget?.monthly_expenses ?? []}
+                    allocations={[]}
+                    templateIncomes={[]}
+                    templateExpenses={data.template?.template_expenses ?? []}
+                    templateAllocations={[]}
+                    year={year}
+                    month={month}
+                  />
+                )
+              },
+              {
+                value: "allocations",
+                label: t("templates.allocations"),
+                content: isLoading || !data ? (
+                  <div className="space-y-3">
+                    <Skeleton className="h-16 w-full rounded-2xl" />
+                    <Skeleton className="h-16 w-full rounded-2xl" />
+                    <Skeleton className="h-16 w-full rounded-2xl" />
+                  </div>
+                ) : (
+                  <MonthlyItems
+                    budgetId={data.budget?.id ?? ""}
+                    currency={householdCurrency}
+                    mode="allocations"
+                    canEdit={isOwner}
+                    incomes={[]}
+                    expenses={[]}
+                    allocations={data.budget?.monthly_allocations ?? []}
+                    templateIncomes={[]}
+                    templateExpenses={[]}
+                    templateAllocations={data.template?.template_allocations ?? []}
+                    year={year}
+                    month={month}
+                  />
+                )
+              }
+            ]}
+          />
+          {!isLoading && data ? (
+            <div className="space-y-3">
+              <div>
+                <h2 className="text-lg font-semibold font-display">{t("budgets.chartsTitle")}</h2>
+                <p className="text-sm text-muted-foreground">{t("budgets.chartsSubtitle")}</p>
               </div>
-            ) : (
-              <MonthlyItems
-                budgetId={data.budget?.id ?? ""}
-                currency={householdCurrency}
-                mode="income"
-                canEdit={isOwner}
-                incomes={data.budget?.monthly_incomes ?? []}
-                expenses={[]}
-                allocations={[]}
-                templateIncomes={data.template?.template_incomes ?? []}
-                templateExpenses={[]}
-                templateAllocations={[]}
-                year={year}
-                month={month}
-              />
-            )
-          },
-          {
-            value: "expenses",
-            label: t("templates.expenses"),
-            content: isLoading || !data ? (
-              <div className="space-y-3">
-                <Skeleton className="h-16 w-full rounded-2xl" />
-                <Skeleton className="h-16 w-full rounded-2xl" />
-                <Skeleton className="h-16 w-full rounded-2xl" />
-              </div>
-            ) : (
-              <MonthlyItems
-                budgetId={data.budget?.id ?? ""}
-                currency={householdCurrency}
-                mode="expenses"
-                canEdit={isOwner}
-                incomes={[]}
+              <BudgetCharts
                 expenses={data.budget?.monthly_expenses ?? []}
-                allocations={[]}
-                templateIncomes={[]}
-                templateExpenses={data.template?.template_expenses ?? []}
-                templateAllocations={[]}
-                year={year}
-                month={month}
-              />
-            )
-          },
-          {
-            value: "allocations",
-            label: t("templates.allocations"),
-            content: isLoading || !data ? (
-              <div className="space-y-3">
-                <Skeleton className="h-16 w-full rounded-2xl" />
-                <Skeleton className="h-16 w-full rounded-2xl" />
-                <Skeleton className="h-16 w-full rounded-2xl" />
-              </div>
-            ) : (
-              <MonthlyItems
-                budgetId={data.budget?.id ?? ""}
-                currency={householdCurrency}
-                mode="allocations"
-                canEdit={isOwner}
-                incomes={[]}
-                expenses={[]}
                 allocations={data.budget?.monthly_allocations ?? []}
-                templateIncomes={[]}
-                templateExpenses={[]}
-                templateAllocations={data.template?.template_allocations ?? []}
-                year={year}
-                month={month}
+                currency={householdCurrency}
+                locale={i18n.language}
+                labels={{
+                  emptyExpenses: t("budgets.chartsEmpty"),
+                  transfers: t("budgets.chartsTransfers"),
+                  monthly: t("budgets.chartsMonthly"),
+                  savings: t("budgets.chartsSavings"),
+                  insightTopCategory: t("budgets.insightTopCategory"),
+                  insightTransfers: t("budgets.insightTransfers"),
+                  insightSavings: t("budgets.insightSavings")
+                }}
               />
-            )
-          }
-        ]}
-      />
+            </div>
+          ) : null}
+        </div>
+        <div className="order-1 space-y-4 lg:order-2 lg:sticky lg:top-24">
+          {isLoading || !data ? (
+            <div className="grid gap-4">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <Skeleton key={index} className="h-24 w-full rounded-2xl" />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <SummaryCards
+                variant="stack"
+                items={[
+                  {
+                    label: t("templates.income"),
+                    value: formatCurrency(incomeTotal, householdCurrency, i18n.language),
+                    sub: data?.template
+                      ? `${t("budgets.templateValue")}: ${formatCurrency(
+                          templateIncomeTotal,
+                          householdCurrency,
+                          i18n.language
+                        )}`
+                      : undefined
+                  },
+                  {
+                    label: t("templates.expenses"),
+                    value: formatCurrency(expensesTotal, householdCurrency, i18n.language),
+                    sub: data?.template
+                      ? `${t("budgets.templateValue")}: ${formatCurrency(
+                          templateExpensesTotal,
+                          householdCurrency,
+                          i18n.language
+                        )}`
+                      : undefined
+                  },
+                  {
+                    label: t("templates.allocations"),
+                    value: formatCurrency(
+                      allocationsTotal,
+                      householdCurrency,
+                      i18n.language
+                    ),
+                    sub: data?.template
+                      ? `${t("budgets.templateValue")}: ${formatCurrency(
+                          templateAllocationsTotal,
+                          householdCurrency,
+                          i18n.language
+                        )}`
+                      : undefined
+                  },
+                  {
+                    label: t("templates.unallocated"),
+                    value: formatCurrency(
+                      unallocatedTotal,
+                      householdCurrency,
+                      i18n.language
+                    ),
+                    tone: unallocatedTotal >= 0 ? "good" : "warn",
+                    sub: data?.template
+                      ? `${t("budgets.templateValue")}: ${formatCurrency(
+                          templateUnallocatedTotal,
+                          householdCurrency,
+                          i18n.language
+                        )}`
+                      : undefined
+                  }
+                ]}
+              />
+              <div className="rounded-2xl border border-border/60 bg-card/70 p-4 shadow-[0_18px_40px_-35px_rgba(0,0,0,0.8)]">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    {t("budgets.spendingTransfers")}
+                  </span>
+                  <span className="font-semibold">
+                    {formatCurrency(
+                      spendingTransferTotal,
+                      householdCurrency,
+                      i18n.language
+                    )}
+                  </span>
+                </div>
+                <div className="mt-2 flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    {t("budgets.savingsTotal")}
+                  </span>
+                  <span className="font-semibold">
+                    {formatCurrency(savingsTotal, householdCurrency, i18n.language)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

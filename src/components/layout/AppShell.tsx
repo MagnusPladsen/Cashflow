@@ -7,7 +7,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen pb-24 lg:pb-0">
       <TopNav />
       <InviteAcceptance />
-      <main className="mx-auto w-full max-w-6xl px-4 py-8">{children}</main>
+      <main className="mx-auto w-full max-w-7xl px-4 py-10">
+        <div className="section-reveal">{children}</div>
+      </main>
       <MobileNav />
     </div>
   );

@@ -20,14 +20,14 @@ export default function TopNav() {
   const { t } = useTranslation();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur shadow-[0_12px_30px_-25px_rgba(0,0,0,0.8)]">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-2xl bg-primary/90 text-primary-foreground grid place-items-center font-semibold">
+          <div className="h-10 w-10 rounded-2xl bg-primary/90 text-primary-foreground grid place-items-center font-semibold shadow-[0_16px_30px_-20px_rgba(245,200,120,0.6)]">
             CF
           </div>
           <div>
-            <p className="text-sm font-semibold">{t("appName")}</p>
+            <p className="text-sm font-semibold font-display">{t("appName")}</p>
             <p className="text-xs text-muted-foreground">{t("app.tagline")}</p>
           </div>
         </div>
