@@ -1,3 +1,5 @@
+![AI-assisted](https://img.shields.io/badge/built%20with-AI%20assistance-blue)
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
